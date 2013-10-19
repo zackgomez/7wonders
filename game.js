@@ -14,16 +14,18 @@ var deck_for_age = function(age, num_players) {
     var guilds = _.filter(Cards, function(card) {
       return card.age === 'guild';
     });
+    var guilds = _.sample(guilds, num_players + 2);
     deck = deck.concat(guilds);
   }
 
-  invariant(deck.length === 7 * num_players, 'fucked up ' + deck.length);
+  invariant(deck.length === 7 * num_players, 'fucked up deck');
   return _.shuffle(deck);
 }
 
 var Game = function(num_players) {
   this.age = 1;
 
+  var deck = deck_for_age(1, num_players);
 
   this.players = [];
   for (var i = 0; i < num_players; i++) {
@@ -34,5 +36,3 @@ var Game = function(num_players) {
     });
   }
 };
-
-console.log(deck_for_age(1, 5));
