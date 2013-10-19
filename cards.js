@@ -1,7 +1,5 @@
-var _ = require('underscore');
 var constants = require('./constants');
 var effects = require('./effects');
-var invariant = require('./invariant');
 
 var cards = [
   {age: 1, type: "victory", name: "Baths", players: 3, vps: 3},
@@ -157,25 +155,4 @@ var cards = [
   {age: "guild", type: "guild", name: "Builders Guild", players: "N/A"}
 ];
 
-// Returns a shuffled deck of cards for the given age
-var deck_for_age = function(age, num_players) {
-  invariant(age >= 1 && age <= 3, 'age must be 1, 2, or 3');
-
-  var deck = _.filter(cards, function(card) {
-    return card.age === age && card.players <= num_players;
-  });
-  // Special case guilds in the 3rd age
-  if (age === 3) {
-    var guilds = _.filter(cards, function(card) {
-      return card.age === 'guild';
-    });
-    var guilds = _.sample(guilds, num_players + 2);
-    deck = deck.concat(guilds);
-  }
-
-  invariant(deck.length === 7 * num_players, 'fucked up deck');
-  return _.shuffle(deck);
-}
-
-exports.deck_for_age = deck_for_age;
 exports.cards = cards;
