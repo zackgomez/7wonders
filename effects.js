@@ -29,5 +29,11 @@ module.exports = {
       // TODO return available resources/cost
       return [];
     };
-  }
+  },
+  make_vps_for_card_type_effect: function (card_type, direction, amount) {
+    return function(game_state, owning_player) {
+      // TODO
+      return 0;
+    };
+  },
 };
