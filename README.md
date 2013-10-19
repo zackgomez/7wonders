@@ -10,3 +10,11 @@ Also install the dependencies with
 To run the command-line version, do
 
     node cli.js
+
+Install jasmine-node for running tests
+
+    npm install jasmine-node -g
+
+Run tests
+
+    ./run_tests

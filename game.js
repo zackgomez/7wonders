@@ -22,6 +22,14 @@ var Game = function(player_funcs) {
       play_func: player_funcs[i],
     });
   }
+
+  for (var i = 0; i < num_players; i++) {
+    this.players[i].left_player = i == 0 ? 
+      this.players[num_players-1] : this.players[i-1];
+
+    this.players[i].right_player = i == num_players - 1 ? 
+      this.players[0] : this.players[i+1];
+  }
 };
 
 Game.createWithNRandomSelectionBots = function(num_bots) {
@@ -71,14 +79,6 @@ Game.prototype.startAge = function(age_num) {
 
   _.each(this.players, function(p) {
     p.current_hand = deck.splice(0, Game.HAND_SIZE);
-  });
-
-  _.each(this.players, function (player) {
-    invariant(
-      player.current_hand.length == Game.HAND_SIZE, 
-      'Each player should have seven cards. '+player.name+' has '+
-      player.current_hand.length + ' cards'
-    );
   });
 };
 
