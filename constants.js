@@ -1,10 +1,10 @@
 module.exports = {
   // Wood, Brick, Stone, Ore
-  basicResources: ['W', 'B', 'S', 'O'],
+  BASIC_RESOURCES: ['W', 'B', 'S', 'O'],
   // Loom, Glass, Press
-  advancedResources: ['L', 'G', 'P'],
+  ADVANCED_RESOURCES: ['L', 'G', 'P'],
   // Tablet, Compass, Gear
-  science: ['T', 'C', 'G'],
+  SCIENCE: ['T', 'C', 'G'],
 
   // Directions
   LEFT: 'LEFT',
