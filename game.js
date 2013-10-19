@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Deck = require('./deck');
 var wonders = require('./wonders');
 var invariant = require('./invariant');
+var invariant_violation = require('./invariant').invariant_violation;
 
 var Game = function(player_funcs) {
   var num_players = player_funcs.length;
@@ -11,6 +12,7 @@ var Game = function(player_funcs) {
 
   this.discards = [];
   this.players = [];
+  this.scores = [];
   for (var i = 0; i < num_players; i++) {
     this.players.push({
       name: 'player'+(i+1),
@@ -21,6 +23,7 @@ var Game = function(player_funcs) {
       military_score: 0,
       play_func: player_funcs[i],
     });
+    this.scores.push(null);
   }
 
   for (var i = 0; i < num_players; i++) {
@@ -66,6 +69,8 @@ Game.prototype.run = function() {
     }
   }.bind(this));
 
+  this.computeScores();
+
   return this;
 };
 
@@ -86,10 +91,58 @@ Game.prototype.isEndOfAge = function() {
   return this.players[0].current_hand.length == 0;
 };
 
+Game.prototype.computeScores = function() {
+  this.scores = _.map(this.players, function (player) {
+    var score = {};
+    // 1pt for each 3 coins
+    score.money = Math.floor(player.money / 3);
+
+    // TODO sum military here
+    score.military = 0;
+    
+    // TODO sum from wonder stages here
+    score.wonder = 0;
+    
+    score.victory = 0;
+    score.economy = 0;
+    score.guild = 0;
+    // sum card points from 'vps' field
+    // covers victory, economy and guild cards
+    _.each(player.board, function (card) {
+      if (!card.vps) {
+        return;
+      }
+      if (typeof card.vps === 'function') {
+        score[card.type] += card.vps(player);
+      } else if (typeof card.vps === 'number') {
+        score[card.type] += card.vps;
+      } else {
+        invariant_violation('card vp property should be undefined, a function or a number');
+      }
+    });
+    // accumulate sciences
+    var science = _.filter(
+      _.map(player.board, function (card) { return card.science; }),
+      function (science) { return !!science; }
+    );
+    score.science = this.optimizeScience(science);
+
+    return score;
+  }.bind(this));
+};
+
+Game.prototype.optimizeScience = function(science) {
+  // TODO optimize science score given array of sciences
+  // only difficult part is that some sciences might be an array of choices
+  return 0;
+}
+
 Game.prototype.dumpState = function() {
   console.log("\nCurrent age: "+this.age+"\n");
   console.log("\nPlayers:");
   console.log(this.players);
+  console.log("\nScores:");
+  console.log(this.scores);
   console.log("\nDiscard pile: ");
   console.log(this.discards);
 }
