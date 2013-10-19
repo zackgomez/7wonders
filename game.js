@@ -16,11 +16,27 @@ var Game = function(num_players) {
     this.players.push({
       name: 'player'+(i+1),
       wonder: selected_wonders[i],
-      money: 3,
       hand: deck.slice(i*7, (i+1)*7),
+      money: 3,
+      military_score: 0
     });
   }
 };
+
+Game.prototype.resolveChoices = function (choices) {
+  invariant(
+    Array.isArray(choices) && choices.length === this.players.length,
+    'choices should be an array with entry for each player'
+  );
+
+  for (var i = 0; i < choices.length; i++) {
+    // TODO handle choice
+    // choice is a card to play out of the handle and as well as a way to
+    // pay the resource cost
+  }
+
+  // TODO rotate cards/move age/end game
+}
 
 Game.prototype.dumpState = function() {
   console.log(
