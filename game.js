@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Deck = require('./deck');
 var wonders = require('./wonders');
 var invariant = require('./invariant');
+var Player = require('./player');
 
 var Game = function(player_funcs) {
   var num_players = player_funcs.length;
@@ -12,15 +13,13 @@ var Game = function(player_funcs) {
   this.discards = [];
   this.players = [];
   for (var i = 0; i < num_players; i++) {
-    this.players.push({
-      name: 'player'+(i+1),
-      wonder: selected_wonders[i],
-      money: 3,
-      current_hand: [],
-      board: [],
-      military_score: 0,
-      play_func: player_funcs[i],
-    });
+    this.players.push(
+      new Player(
+        'player'+(i+1), 
+        selected_wonders[i],
+        player_funcs[i]
+      )
+    );
   }
 
   for (var i = 0; i < num_players; i++) {
