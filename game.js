@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var cards = require('./cards');
+var Deck = require('./deck');
 var wonders = require('./wonders');
 var invariant = require('./invariant');
 
@@ -64,7 +64,7 @@ var random_selection = function(player) {
 
 Game.prototype.startAge = function(age_num) {
   this.age = age_num;
-  var deck = cards.deck_for_age(this.age, this.players.length);
+  var deck = Deck.forAge(this.age, this.players.length);
 
   _.each(this.players, function(p) {
     p.current_hand = deck.splice(0, Game.HAND_SIZE);
