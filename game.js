@@ -1,38 +1,32 @@
 var _ = require('underscore');
-var Cards = require('./cards').cards;
+var cards = require('./cards');
+var wonders = require('./wonders');
 var invariant = require('./invariant');
 
-// Returns a shuffled deck of cards for the given age
-var deck_for_age = function(age, num_players) {
-  invariant(age >= 1 && age <= 3, 'age must be 1, 2, or 3');
-
-  var deck = _.filter(Cards, function(card) {
-    return card.age === age && card.players <= num_players;
-  });
-  // Special case guilds in the 3rd age
-  if (age === 3) {
-    var guilds = _.filter(Cards, function(card) {
-      return card.age === 'guild';
-    });
-    var guilds = _.sample(guilds, num_players + 2);
-    deck = deck.concat(guilds);
-  }
-
-  invariant(deck.length === 7 * num_players, 'fucked up deck');
-  return _.shuffle(deck);
-}
-
 var Game = function(num_players) {
+  invariant(num_players >= 3 && num_players <= 7, '3-7 players supported');
+
   this.age = 1;
 
-  var deck = deck_for_age(1, num_players);
+  var deck = cards.deck_for_age(1, num_players);
+  var selected_wonders = _.sample(wonders, num_players);
 
   this.players = [];
   for (var i = 0; i < num_players; i++) {
     this.players.push({
       name: 'player'+(i+1),
+      wonder: selected_wonders[i],
       money: 3,
-      cards: [],
+      hand: deck.slice(i*7, (i+1)*7),
     });
   }
 };
+
+Game.prototype.dumpState = function() {
+  console.log(
+    this.age,
+    this.players
+  );
+}
+
+module.exports = Game;
