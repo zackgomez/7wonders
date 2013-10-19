@@ -13,7 +13,7 @@ To run the command-line version, do
 
 Install jasmine-node for running tests
 
-    npm install jasmine-node -g
+    sudo npm install jasmine-node -g
 
 Run tests
 
