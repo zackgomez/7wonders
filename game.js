@@ -86,21 +86,6 @@ Game.prototype.isEndOfAge = function() {
   return this.players[0].current_hand.length == 0;
 };
 
-Game.prototype.resolveChoices = function (choices) {
-  invariant(
-    Array.isArray(choices) && choices.length === this.players.length,
-    'choices should be an array with entry for each player'
-  );
-
-  for (var i = 0; i < choices.length; i++) {
-    // TODO handle choice
-    // choice is a card to play out of the handle and as well as a way to
-    // pay the resource cost
-  }
-
-  // TODO rotate cards/move age/end game
-}
-
 Game.prototype.dumpState = function() {
   console.log("\nCurrent age: "+this.age+"\n");
   console.log("\nPlayers:");
