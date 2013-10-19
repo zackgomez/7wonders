@@ -22,8 +22,6 @@ var Game = function(player_funcs) {
       play_func: player_funcs[i],
     });
   }
-
-  this.startAge(1);
 };
 
 Game.createWithNRandomSelectionBots = function(num_bots) {
@@ -33,27 +31,32 @@ Game.createWithNRandomSelectionBots = function(num_bots) {
 };
 
 Game.prototype.run = function() {
-  while (!this.isEndOfAge()) {
-    var passed_cards = _.map(this.players, function(p) {
-      var choice = p.play_func(p);
-      p.board.push(p.current_hand[choice]);
-      p.current_hand.splice(choice, 1);
-      var to_pass = p.current_hand;
-      p.current_hand = [];
-      return to_pass;
-    });
+  _.each([1,2,3], function(age) {
+    console.log('Starting age '+age);
+    this.startAge(age);
 
-    if (passed_cards[0].length == 1) {
-      _.each(passed_cards, function (cards) {
-        this.discards.push(cards[0]);
-      }.bind(this));
-    } else {
-      console.log('Players picking card, passing '+passed_cards[0].length);
-      for (var i = 0; i < this.players.length; i++) {
-        this.players[i].current_hand = passed_cards[i];
+    while (!this.isEndOfAge()) {
+      var passed_cards = _.map(this.players, function(p) {
+        var choice = p.play_func(p);
+        p.board.push(p.current_hand[choice]);
+        p.current_hand.splice(choice, 1);
+        var to_pass = p.current_hand;
+        p.current_hand = [];
+        return to_pass;
+      });
+
+      if (passed_cards[0].length == 1) {
+        _.each(passed_cards, function (cards) {
+          this.discards.push(cards[0]);
+        }.bind(this));
+      } else {
+        console.log('Players picking card, passing '+passed_cards[0].length);
+        for (var i = 0; i < this.players.length; i++) {
+          this.players[i].current_hand = passed_cards[i];
+        }
       }
     }
-  }
+  }.bind(this));
 
   return this;
 };
