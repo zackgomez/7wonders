@@ -1,3 +1,4 @@
+var constants = require('./constants');
 var invariant = require('./invariant');
 
 module.exports = {
@@ -10,4 +11,16 @@ module.exports = {
   play_discarded_card_effect: function (game, owning_player) {
     // TODO
   },
+  make_trading_resource: function (dir, tradable_resources) {
+    invariant(
+      dir === constants.LEFT ||
+      dir === constants.RIGHT ||
+      dir === constants.BOTH,
+      'direction must be left, right or both'
+    );
+    return function(game_state, owning_player) {
+      // TODO return available resources/cost
+      return [];
+    };
+  }
 };

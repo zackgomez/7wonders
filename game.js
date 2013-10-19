@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var cards = require('./cards');
+var Deck = require('./deck');
 var wonders = require('./wonders');
 var invariant = require('./invariant');
 
@@ -8,7 +8,7 @@ var Game = function(num_players) {
 
   this.age = 1;
 
-  var deck = cards.deck_for_age(1, num_players);
+  var deck = Deck.forAge(1, num_players);
   var selected_wonders = _.sample(wonders, num_players);
 
   this.players = [];
@@ -22,7 +22,6 @@ var Game = function(num_players) {
       board: [],
       military_score: 0
     });
-  
   }
 };
 
