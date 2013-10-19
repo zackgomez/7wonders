@@ -7,7 +7,9 @@ module.exports = {
   SCIENCE: ['T', 'C', 'G'],
 
   // Directions
+  SELF: 'SELF',
   LEFT: 'LEFT',
   RIGHT: 'RIGHT',
-  BOTH: 'BOTH',
+  NEIGHBORS: 'NEIGHBORS',
+  ALL: 'ALL',
 };

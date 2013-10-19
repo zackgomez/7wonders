@@ -8,6 +8,13 @@ module.exports = {
       game.getPlayer(owning_player).money += amount;
     };
   },
+  make_money_for_card_type_effect: function (card_type, direction, amount) {
+    return function (game, owning_player) {
+      // TODO fill amount based on game, card_type, owning_player and direction
+      var total = 0;
+      game.getPlayer(owning_player).money += total;
+    };
+  },
   play_discarded_card_effect: function (game, owning_player) {
     // TODO
   },
@@ -15,7 +22,7 @@ module.exports = {
     invariant(
       dir === constants.LEFT ||
       dir === constants.RIGHT ||
-      dir === constants.BOTH,
+      dir === constants.NEIGHBORS,
       'direction must be left, right or both'
     );
     return function(game_state, owning_player) {
