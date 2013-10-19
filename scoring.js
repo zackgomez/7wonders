@@ -1,5 +1,5 @@
 module.exports = {
-  getMilitaryTokensForAge: function (player, age) {
+  getMilitaryTokensForPlayerInAge: function (player, age) {
     var my_strength = player.getMilitaryStrength();
     var right_strength = player.right_player.getMilitaryStrength(); 
     var left_strength = player.left_player.getMilitaryStrength(); 

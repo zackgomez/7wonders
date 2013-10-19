@@ -7,7 +7,7 @@ var Player = function(name, selected_wonder, play_func) {
   this.money = 3;
   this.current_hand = [];
   this.board = [];
-  this.military_score = 0;
+  this.military_tokens = [];
   this.left_player = null;
   this.right_player = null;
 }

@@ -9,5 +9,3 @@ var num_players = 4;
 
 console.log('Starting first age');
 Game.createWithNRandomSelectionBots(4).run().dumpState();
-
-console.log('\nJust ran one age without rule checks (not yet implemented)...');

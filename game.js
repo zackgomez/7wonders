@@ -3,6 +3,7 @@ var Deck = require('./deck');
 var wonders = require('./wonders');
 var invariant = require('./invariant');
 var Player = require('./player');
+var Scoring = require('./scoring');
 
 var Game = function(player_funcs) {
   var num_players = player_funcs.length;
@@ -39,8 +40,13 @@ Game.createWithNRandomSelectionBots = function(num_bots) {
 
 Game.prototype.run = function() {
   _.each([1,2,3], function(age) {
-    console.log('Starting age '+age);
     this.startAge(age);
+    console.log('Starting age '+age);
+    var deck = Deck.forAge(age, this.players.length);
+
+    _.each(this.players, function(p) {
+      p.current_hand = deck.splice(0, Game.HAND_SIZE);
+    });
 
     while (!this.isEndOfAge()) {
       var passed_cards = _.map(this.players, function(p) {
@@ -63,6 +69,8 @@ Game.prototype.run = function() {
         }
       }
     }
+
+    this.resolveMilitary(age);
   }.bind(this));
 
   return this;
@@ -83,6 +91,12 @@ Game.prototype.startAge = function(age_num) {
 
 Game.prototype.isEndOfAge = function() {
   return this.players[0].current_hand.length == 0;
+};
+
+Game.prototype.resolveMilitary = function(age) {
+  _.each(this.players, function (p) {
+    p.military_tokens = Scoring.getMilitaryTokensForPlayerInAge(p, age);
+  });
 };
 
 Game.prototype.resolveChoices = function (choices) {
