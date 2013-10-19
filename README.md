@@ -3,10 +3,10 @@
 
 Make sure you have node installed  (http://nodejs.org/download/)
 
-Also install underscore
+Also install the dependencies with
 
-    npm install underscore
+    npm install
 
 To run the command-line version, do
 
-  node cli.js
+    node cli.js
