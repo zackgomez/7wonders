@@ -105,50 +105,8 @@ Game.prototype.resolveMilitary = function(age) {
 };
 
 Game.prototype.computeScores = function() {
-  this.scores = _.map(this.players, function (player) {
-    var score = {};
-    // 1pt for each 3 coins
-    score.money = Math.floor(player.money / 3);
-
-    // TODO sum military here
-    score.military = 0;
-    
-    // TODO sum from wonder stages here
-    score.wonder = 0;
-    
-    score.victory = 0;
-    score.economy = 0;
-    score.guild = 0;
-    // sum card points from 'vps' field
-    // covers victory, economy and guild cards
-    _.each(player.board, function (card) {
-      if (!card.vps) {
-        return;
-      }
-      if (typeof card.vps === 'function') {
-        score[card.type] += card.vps(player);
-      } else if (typeof card.vps === 'number') {
-        score[card.type] += card.vps;
-      } else {
-        invariant_violation('card vp property should be undefined, a function or a number');
-      }
-    });
-    // accumulate sciences
-    var science = _.filter(
-      _.map(player.board, function (card) { return card.science; }),
-      function (science) { return !!science; }
-    );
-    score.science = this.optimizeScience(science);
-
-    return score;
-  }.bind(this));
+  this.scores = _.map(this.players, Scoring.getEndGameScoreForPlayer);
 };
-
-Game.prototype.optimizeScience = function(science) {
-  // TODO optimize science score given array of sciences
-  // only difficult part is that some sciences might be an array of choices
-  return 0;
-}
 
 Game.prototype.dumpState = function() {
   console.log("\nCurrent age: "+this.age+"\n");

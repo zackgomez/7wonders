@@ -34,4 +34,44 @@ describe('scoring tests', function () {
     expect(Scoring.getMilitaryTokensForPlayerInAge(player, 2)).toEqual([3, -1]);
     expect(Scoring.getMilitaryTokensForPlayerInAge(player, 3)).toEqual([5, -1]);
   });
+
+  it('should correctly calculate and round money score', function () {
+    player.money = 0;
+    expect(Scoring.getEndGameScoreForPlayer(player).money).toEqual(0);
+
+    player.money = 5;
+    expect(Scoring.getEndGameScoreForPlayer(player).money).toEqual(1);
+
+    player.money = 6;
+    expect(Scoring.getEndGameScoreForPlayer(player).money).toEqual(2);
+  });
+
+  it('should correctly sum military score', function () {
+    player.military_tokens = [-1, 3, 5];
+    expect(Scoring.getEndGameScoreForPlayer(player).military).toEqual(7);
+
+    player.military_tokens = [];
+    expect(Scoring.getEndGameScoreForPlayer(player).military).toEqual(0);
+
+    player.military_tokens = [-1, -1, -1, 3, -1];
+    expect(Scoring.getEndGameScoreForPlayer(player).military).toEqual(-1);
+  });
+
+  it('should correctly calculate victory point functions', function () {
+    player.board.push(Helpers.victoryCardWithFunc(function () { return 5; }));
+    player.board.push(Helpers.victoryCard(3));
+    expect(Scoring.getEndGameScoreForPlayer(player).victory).toEqual(8);
+  });
+
+  it('should correctly split victory and guild points', function () {
+    player.money = 0;
+    player.board.push(Helpers.victoryCardWithFunc(function () { return 5; }));
+    player.board.push(Helpers.victoryCard(3));
+    player.board.push(Helpers.guildCardWithVPs(15));
+
+    var score = Scoring.getEndGameScoreForPlayer(player)
+    expect(score.victory).toEqual(8);
+    expect(score.guild).toEqual(15);
+    expect(score.total).toEqual(23);
+  });
 });
