@@ -3,14 +3,15 @@ var Player = require('../player');
 var Helpers = require('./helpers');
 
 describe('scoring tests', function () {
+  var wonder;
   var player;
   var left_player;
   var right_player;
 
   beforeEach(function () {
-    player = new Player();
-    left_player = new Player();
-    right_player = new Player();
+    player = new Player('p', Helpers.basicWonder());
+    left_player = new Player('lp', Helpers.basicWonder());
+    right_player = new Player('rp', Helpers.basicWonder());
     player.left_player = left_player;
     player.right_player = right_player;
   }); 
@@ -73,5 +74,19 @@ describe('scoring tests', function () {
     expect(score.victory).toEqual(8);
     expect(score.guild).toEqual(15);
     expect(score.total).toEqual(23);
+  });
+
+  it('should count completed wonder points', function () {
+    var wonder = {stages: [{vps: 3}, {vps: 5}]};
+    player.wonder = wonder;
+
+    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
+
+    var score = Scoring.getEndGameScoreForPlayer(player);
+    expect(score.wonder).toEqual(3);
+
+    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
+    var score = Scoring.getEndGameScoreForPlayer(player);
+    expect(score.wonder).toEqual(8);
   });
 });

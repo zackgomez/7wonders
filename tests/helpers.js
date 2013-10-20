@@ -1,4 +1,8 @@
 module.exports = {
+  basicWonder: function() {
+    return {stages: [{vps: 3}, {vps: 5}]};
+  },
+
   militaryCard: function(strength) {
     return { type: 'military', military: strength };
   },

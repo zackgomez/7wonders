@@ -7,21 +7,33 @@ var count_player_card_types = function (player, type) {
     return sum + (card.type === type ? 1 : 0);
   }, 0);
 };
-var count_card_types = function (player, direction, type) {
+
+var iterate_direction = function (player, direction, iterator) {
   constants.assertDirection(direction);
-  var count = 0;
   if (direction & constants.SELF) {
-    count += count_player_card_types(player, type);
+    iterator(player);
   }
   if (direction & constants.LEFT) {
-    console.log('left');
-    count += count_player_card_types(player.left_player, type);
+    iterator(player.left_player);
   }
   if (direction & constants.RIGHT) {
-    count += count_player_card_types(player.right_player, type);
-    console.log('right', count);
+    iterator(player.right_player);
   }
+};
 
+var count_card_types = function (player, direction, type) {
+  var count = 0;
+  iterate_direction(player, direction, function (p) {
+    count += count_player_card_types(p, type);
+  });
+  return count;
+};
+
+var count_completed_wonder_stages = function (player, direction) {
+  var count = 0;
+  iterate_direction(player, direction, function (p) {
+    count += p.getCompletedWonderStages().length;
+  });
   return count;
 };
 
@@ -72,15 +84,13 @@ module.exports = {
   make_money_for_wonder_stages_effect: function (direction, amount) {
     constants.assertDirection(direction);
     return function (player) {
-      // TODO
-      return 0;
+      player.money += amount * count_completed_wonder_stages(player, direction);
     };
   },
   make_vps_for_wonder_stages_effect: function (direction, amount) {
     constants.assertDirection(direction);
     return function (player) {
-      // TODO
-      return 0;
+      return amount * count_completed_wonder_stages(player, direction);
     };
   },
 };
