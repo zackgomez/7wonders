@@ -69,7 +69,7 @@ describe('scoring tests', function () {
     player.board.push(Helpers.victoryCard(3));
     player.board.push(Helpers.guildCardWithVPs(15));
 
-    var score = Scoring.getEndGameScoreForPlayer(player)
+    var score = Scoring.getEndGameScoreForPlayer(player);
     expect(score.victory).toEqual(8);
     expect(score.guild).toEqual(15);
     expect(score.total).toEqual(23);

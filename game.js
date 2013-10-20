@@ -76,7 +76,7 @@ Game.prototype.run = function() {
     this.resolveMilitary(age);
   }.bind(this));
 
-  this.computeScores();
+  this.scores = _.map(this.players, Scoring.getEndGameScoreForPlayer);
 
   return this;
 };
@@ -104,9 +104,6 @@ Game.prototype.resolveMilitary = function(age) {
   });
 };
 
-Game.prototype.computeScores = function() {
-  this.scores = _.map(this.players, Scoring.getEndGameScoreForPlayer);
-};
 
 Game.prototype.dumpState = function() {
   console.log("\nCurrent age: "+this.age+"\n");

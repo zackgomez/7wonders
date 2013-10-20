@@ -9,11 +9,11 @@ module.exports = {
   SCIENCE: ['T', 'C', 'G'],
 
   // Directions
-  SELF: 'SELF',
-  LEFT: 'LEFT',
-  RIGHT: 'RIGHT',
-  NEIGHBORS: 'NEIGHBORS',
-  ALL: 'ALL',
+  SELF: 0x1,
+  LEFT: 0x2,
+  RIGHT: 0x4,
+  NEIGHBORS: 0x6,
+  ALL: 0x7,
 
   assertDirection: function(dir) {
     // TODO(zack): uhhh clean this 'module.exports' business up
