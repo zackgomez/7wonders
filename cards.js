@@ -54,7 +54,7 @@ var cards = [
 
   {age: 2, type: 'victory', name: 'Aqueduct', players: 3, resource_cost: ['S', 'S', 'S'], upgrades_from: 'Baths', vps: 5},
   {age: 2, type: 'victory', name: 'Temple', players: 3, resource_cost: ['W', 'B', 'G'], upgrades_from: 'Altar', vps: 3},
-  {age: 2, type: 'victory', name: 'Statue', players: 3, resource_cost: ['W', 'O', 'O'], upgrades_from: 'Theather', vps: 4},
+  {age: 2, type: 'victory', name: 'Statue', players: 3, resource_cost: ['W', 'O', 'O'], upgrades_from: 'Theater', vps: 4},
   {age: 2, type: 'economy', name: 'Forum', players: 3, resource_cost: ['B', 'B'], resources: [['L', 'G', 'P']], upgrades_from: ['East Trading Post', 'West Trading Post']},
   {age: 2, type: 'economy', name: 'Caravansery', players: 3, resource_cost: ['W', 'W'], resources: [['B', 'S', 'O', 'W']], upgrades_from: 'Marketplace'},
   {age: 2, type: 'economy', name: 'Vineyard', players: 3, effect: effects.make_money_for_card_type_effect('basic_resource', constants.ALL, 1)},
@@ -95,7 +95,7 @@ var cards = [
   {age: 2, type: 'military', name: 'Archery Range', players: 6, resource_cost: ['W', 'W', 'O'], upgrades_from: 'Workshop', military: 2},
   {age: 2, type: 'science', name: 'Library', players: 6, resource_cost: ['S', 'S', 'L'], upgrades_from: 'Scriptorium', science: 'T'},
   {age: 2, type: 'victory', name: 'Aqueduct', players: 7, resource_cost: ['S', 'S', 'S'], upgrades_from: 'Baths', vps: 5},
-  {age: 2, type: 'victory', name: 'Statue', players: 7, resource_cost: ['W', 'O', 'O'], upgrades_from: 'Theather', vps: 4},
+  {age: 2, type: 'victory', name: 'Statue', players: 7, resource_cost: ['W', 'O', 'O'], upgrades_from: 'Theater', vps: 4},
   {age: 2, type: 'economy', name: 'Forum', players: 7, resource_cost: ['B', 'B'], resources: [['L', 'G', 'P']], upgrades_from: ['East Trading Post', 'West Trading Post']},
   {age: 2, type: 'economy', name: 'Bazar', players: 7, effect: effects.make_money_for_card_type_effect('advanced_resource', constants.ALL, 2)},
   {age: 2, type: 'military', name: 'Walls', players: 7, resource_cost: ['S', 'S', 'S'], military: 2},
