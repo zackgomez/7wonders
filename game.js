@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Actions = require('./actions');
 var Deck = require('./deck');
 var wonders = require('./wonders');
 var invariant = require('./invariant');
@@ -35,9 +36,9 @@ var Game = function(player_funcs) {
   }
 };
 
-Game.createWithNRandomSelectionBots = function(num_bots) {
+Game.createWithNRandomSelectionBots = function(num_bots, bot_func) {
   return new Game(
-    _(num_bots).times(function () { return random_selection; })
+    _(num_bots).times(function () { return bot_func; })
   );
 };
 
@@ -54,12 +55,13 @@ Game.prototype.run = function() {
     while (!this.isEndOfAge()) {
       var passed_cards = _.map(this.players, function(p) {
         var choice = p.play_func(p);
-        p.board.push(p.current_hand[choice]);
-        p.current_hand.splice(choice, 1);
+
+        this.handleChoice(p, choice);
+
         var to_pass = p.current_hand;
         p.current_hand = [];
         return to_pass;
-      });
+      }.bind(this));
 
       if (passed_cards[0].length == 1) {
         _.each(passed_cards, function (cards) {
@@ -81,8 +83,25 @@ Game.prototype.run = function() {
   return this;
 };
 
-var random_selection = function(player) {
-  return 0; // just pick first card
+Game.prototype.handleChoice = function (player, choice) {
+  console.log(choice);
+  invariant(
+    choice.card >= 0 && choice.card < player.current_hand.length,
+    'card index '+choice.card+' not found'
+  );
+  var card = player.current_hand[choice.card];
+  // remove card from hand
+  player.current_hand.splice(choice, 1);
+
+  if (choice.action === Actions.constants.PLAY) {
+    player.board.push(card);
+  } else if (choice.action === Actions.constants.SELL) {
+    player.money += 3;
+  } else if (choice.action === Actions.constants.UPGRADE_WONDER) {
+    player.wonder_upgrade_cards.push(card);
+  } else {
+    invariant_violation('unknown choice action '+choice.action);
+  }
 };
 
 Game.prototype.startAge = function(age_num) {

@@ -1,3 +1,4 @@
+var Actions = require('./actions');
 var Game = require('./game');
 var Deck = require('./deck');
 var invariant = require('./invariant');
@@ -7,5 +8,9 @@ console.log('Welcome to the 7 Wonders command line');
 
 var num_players = 4;
 
+var bot_play_func = function (player) {
+  return Actions.play(0);
+};
+
 console.log('Starting first age');
-Game.createWithNRandomSelectionBots(4).run().dumpState();
+Game.createWithNRandomSelectionBots(4, bot_play_func).run().dumpState();
