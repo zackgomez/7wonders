@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Actions = require('./actions');
 var Deck = require('./deck');
 var wonders = require('./wonders');
 var invariant = require('./invariant');
@@ -35,42 +36,17 @@ var Game = function(player_funcs) {
   }
 };
 
-Game.createWithNRandomSelectionBots = function(num_bots) {
+Game.createWithNRandomSelectionBots = function(num_bots, bot_func) {
   return new Game(
-    _(num_bots).times(function () { return random_selection; })
+    _(num_bots).times(function () { return bot_func; })
   );
 };
 
 Game.prototype.run = function() {
   _.each([1,2,3], function(age) {
     this.startAge(age);
-    console.log('Starting age '+age);
-    var deck = Deck.forAge(age, this.players.length);
-
-    _.each(this.players, function(p) {
-      p.current_hand = deck.splice(0, Game.HAND_SIZE);
-    });
-
     while (!this.isEndOfAge()) {
-      var passed_cards = _.map(this.players, function(p) {
-        var choice = p.play_func(p);
-        p.board.push(p.current_hand[choice]);
-        p.current_hand.splice(choice, 1);
-        var to_pass = p.current_hand;
-        p.current_hand = [];
-        return to_pass;
-      });
-
-      if (passed_cards[0].length == 1) {
-        _.each(passed_cards, function (cards) {
-          this.discards.push(cards[0]);
-        }.bind(this));
-      } else {
-        console.log('Players picking card, passing '+passed_cards[0].length);
-        for (var i = 0; i < this.players.length; i++) {
-          this.players[i].current_hand = passed_cards[i];
-        }
-      }
+      this.playRound();
     }
 
     this.resolveMilitary(age);
@@ -81,11 +57,51 @@ Game.prototype.run = function() {
   return this;
 };
 
-var random_selection = function(player) {
-  return 0; // just pick first card
+Game.prototype.handleChoice = function (player, choice) {
+  invariant(
+    choice.card >= 0 && choice.card < player.current_hand.length,
+    'card index '+choice.card+' not found'
+  );
+  var card = player.current_hand[choice.card];
+  // remove card from hand
+  player.current_hand.splice(choice, 1);
+
+  if (choice.action === Actions.constants.PLAY) {
+    player.board.push(card);
+  } else if (choice.action === Actions.constants.SELL) {
+    player.money += Game.MONEY_FOR_SELL;
+  } else if (choice.action === Actions.constants.UPGRADE_WONDER) {
+    player.wonder_upgrade_cards.push(card);
+  } else {
+    invariant_violation('unknown choice action '+choice.action);
+  }
+};
+
+Game.prototype.playRound = function () {
+  var passed_cards = _.map(this.players, function(p) {
+    var choice = p.play_func(p);
+
+    this.handleChoice(p, choice);
+
+    var to_pass = p.current_hand;
+    p.current_hand = [];
+    return to_pass;
+  }.bind(this));
+
+  if (passed_cards[0].length == 1) {
+    _.each(passed_cards, function (cards) {
+      this.discards.push(cards[0]);
+    }.bind(this));
+  } else {
+    console.log('Players picking card, passing '+passed_cards[0].length);
+    for (var i = 0; i < this.players.length; i++) {
+      this.players[i].current_hand = passed_cards[i];
+    }
+  }
 };
 
 Game.prototype.startAge = function(age_num) {
+  console.log('Starting age '+age_num);
   this.age = age_num;
   var deck = Deck.forAge(this.age, this.players.length);
 
@@ -116,5 +132,6 @@ Game.prototype.dumpState = function() {
 }
 
 Game.HAND_SIZE = 7;
+Game.MONEY_FOR_SELL = 3;
 
 module.exports = Game;
