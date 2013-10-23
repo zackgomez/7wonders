@@ -18,7 +18,7 @@ describe('player tests', function () {
 
     expect(p.getMilitaryStrength()).toBe(5);
 
-    p.wonder_upgrade_cards.push(Helpers.victoryCard());
+    p.board.push(Helpers.wrapWonderStage(p.wonder.stages[0]));
     
     expect(p.getMilitaryStrength()).toBe(14);
   });
@@ -27,22 +27,9 @@ describe('player tests', function () {
     var player = new Player();
 
     player.wonder = {stages: [Helpers.militaryCard(1), Helpers.militaryCard(2)]};
-    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
+    player.board.push(Helpers.wrapWonderStage(player.wonder.stages[0]));
     player.board.push(Helpers.militaryCard(2));
 
     expect(player.getMilitaryStrength()).toEqual(3); 
-  });
-
-  it('should return completed wonder stages', function () {
-    var player = new Player();
-    player.wonder = {stages: [Helpers.victoryCard(3), Helpers.victoryCard(5)]};
-    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
-
-    expect(player.getCompletedWonderStages()).toEqual([Helpers.victoryCard(3)]);
-
-    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
-    expect(player.getCompletedWonderStages()).toEqual(
-      [Helpers.victoryCard(3), Helpers.victoryCard(5)]
-    );
   });
 });

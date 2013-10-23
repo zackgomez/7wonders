@@ -39,7 +39,7 @@ describe('game tests', function() {
     });
   });
 
-  it('should sell a card for the correct amoutn of money', function () {
+  it('should sell a card for the correct amount of money', function () {
     var game = Game.createWithNRandomSelectionBots(4, function (player) {
       return Actions.sell(0);
     });
@@ -56,13 +56,16 @@ describe('game tests', function() {
     });
   });
 
-  it('should sell a card for the correct amoutn of money', function () {
+  it('should sell upgrade wonder propertly', function () {
     var game = Game.createWithNRandomSelectionBots(4, function (player) { });
     game.startAge(1)
 
     var player = game.players[0];
+    player.wonder = {stages: [{vps: 3}]};
     game.handleChoice(player, Actions.upgradeWonder(0));
 
-    expect(player.wonder_upgrade_cards.length).toEqual(1);
+    expect(player.board.length).toEqual(1);
+    expect(player.board[0].type).toEqual('wonder');
+    expect(player.board[0].vps).toEqual(3);
   });
 });

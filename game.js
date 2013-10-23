@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Actions = require('./actions');
+var Cards = require('./cards');
 var Deck = require('./deck');
 var wonders = require('./wonders');
 var invariant = require('./invariant');
@@ -71,7 +72,14 @@ Game.prototype.handleChoice = function (player, choice) {
   } else if (choice.action === Actions.constants.SELL) {
     player.money += Game.MONEY_FOR_SELL;
   } else if (choice.action === Actions.constants.UPGRADE_WONDER) {
-    player.wonder_upgrade_cards.push(card);
+    var wonder_count = player.getCardsOfType('wonder').length;
+    invariant(
+      wonder_count < player.wonder.stages.length,
+      'trying to build wonder after all have been completed'
+    );
+    player.board.push(
+      Cards.wrapWonderStage(player.wonder.stages[wonder_count], card)
+    );
   } else {
     invariant_violation('unknown choice action '+choice.action);
   }

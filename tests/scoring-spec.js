@@ -1,3 +1,4 @@
+var Cards = require('../cards');
 var Scoring = require('../scoring');
 var Player = require('../player');
 var Helpers = require('./helpers');
@@ -80,12 +81,12 @@ describe('scoring tests', function () {
     var wonder = {stages: [{vps: 3}, {vps: 5}]};
     player.wonder = wonder;
 
-    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
+    player.board.push(Cards.wrapWonderStage(player.wonder.stages[0]));
 
     var score = Scoring.getEndGameScoreForPlayer(player);
     expect(score.wonder).toEqual(3);
 
-    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
+    player.board.push(Cards.wrapWonderStage(player.wonder.stages[1]));
     var score = Scoring.getEndGameScoreForPlayer(player);
     expect(score.wonder).toEqual(8);
   });

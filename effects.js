@@ -3,9 +3,7 @@ var constants = require('./constants');
 var invariant = require('./invariant');
 
 var count_player_card_types = function (player, type) {
-  return _.reduce(player.board, function (sum, card) {
-    return sum + (card.type === type ? 1 : 0);
-  }, 0);
+  return player.getCardsOfType(type).length;
 };
 
 var iterate_direction = function (player, direction, iterator) {
@@ -30,11 +28,7 @@ var count_card_types = function (player, direction, type) {
 };
 
 var count_completed_wonder_stages = function (player, direction) {
-  var count = 0;
-  iterate_direction(player, direction, function (p) {
-    count += p.getCompletedWonderStages().length;
-  });
-  return count;
+  return count_card_types(player, direction, 'wonder');
 };
 
 module.exports = {

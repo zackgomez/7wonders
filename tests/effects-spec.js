@@ -61,9 +61,9 @@ describe('effects tests', function () {
   });
 
   it('should give vps for completed wonder points', function () {
-    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
-    left_player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
-    left_player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
+    player.board.push(Helpers.wrapWonderStage(player.wonder.stages[0]));
+    left_player.board.push(Helpers.wrapWonderStage(player.wonder.stages[0]));
+    left_player.board.push(Helpers.wrapWonderStage(player.wonder.stages[1]));
 
     expect(
       effects.make_vps_for_wonder_stages_effect(constants.SELF, 1)(player)
@@ -86,9 +86,9 @@ describe('effects tests', function () {
   });
 
   it('should give money for completed wonder points', function () {
-    player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
-    left_player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
-    left_player.wonder_upgrade_cards.push(Helpers.victoryCard(0));
+    player.board.push(Helpers.wrapWonderStage(player.wonder.stages[0]));
+    left_player.board.push(Helpers.wrapWonderStage(player.wonder.stages[0]));
+    left_player.board.push(Helpers.wrapWonderStage(player.wonder.stages[1]));
 
     player.money = 0;
     effects.make_money_for_wonder_stages_effect(constants.SELF, 1)(player);

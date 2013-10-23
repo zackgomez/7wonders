@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var constants = require('./constants');
 var effects = require('./effects');
 
@@ -233,3 +234,12 @@ var cards = [
 ];
 
 exports.cards = cards;
+exports.wrapWonderStage = function (stage, card) {
+  var wrapper = {
+    age: 'wonder',
+    type: 'wonder',
+    name: 'Wonder Upgrade',
+    wrapped_card: card,
+  };
+  return _.extend(wrapper, stage);
+};

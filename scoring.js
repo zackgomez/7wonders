@@ -42,11 +42,7 @@ module.exports = {
       return total + t;
     }, 0);
     
-    // points from flat vp wonder stages
-    score.wonder = _.reduce(player.getCompletedWonderStages(), function (total, s) {
-      return total += s.vps ? s.vps : 0;
-    }, 0);
-    
+    score.wonder = 0;
     score.victory = 0;
     score.economy = 0;
     score.guild = 0;
@@ -68,12 +64,6 @@ module.exports = {
     var sciences = _.filter(
       _.map(player.board, function (card) { return card.science; }),
       function (science) { return !!science; }
-    );
-    sciences = sciences.concat(
-      _.chain(player.getCompletedWonderStages())
-      .filter(function (s) { return !!s.science; })
-      .pluck('science')
-      .value()
     );
     score.science = optimize_science(sciences);
 
