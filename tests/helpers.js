@@ -52,6 +52,14 @@ module.exports = {
       name: 'card'+name_counter++
     };
   },
+  
+  scienceCard: function(sciences) {
+    return {
+      type: 'science',
+      science: sciences,
+      name: 'card'+name_counter++
+    };
+  },
 
   wrapWonderStage: function(stage) {
     return Cards.wrapWonderStage(stage, victoryCard(0));

@@ -90,4 +90,36 @@ describe('scoring tests', function () {
     var score = Scoring.getEndGameScoreForPlayer(player);
     expect(score.wonder).toEqual(8);
   });
+  
+  it('should correctly optimize science points', function () {
+    player.board.push(Helpers.scienceCard('T'));
+    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(1);
+    
+    player.board.push(Helpers.scienceCard('C'));
+    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(2);
+
+    player.board.push(Helpers.scienceCard('T'));
+    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(5);
+
+    player.board.push(Helpers.scienceCard('G'));
+    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(13);
+
+    player.board.push(Helpers.scienceCard('T'));
+    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(18);
+
+    player.board.push(Helpers.scienceCard('C'))
+    player.board.push(Helpers.scienceCard(['T', 'C', 'G']));
+    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(31);
+    
+    player.board.push(Helpers.scienceCard(['T', 'C', 'G']));
+    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(38);
+  });
+  
+  it('should correctly optimize wonder science points', function () {
+    player.wonder = {stages: [{science: ['T', 'C', 'G']}]};
+    player.board.push(Cards.wrapWonderStage(player.wonder.stages[0]));
+    player.board.push(Helpers.scienceCard('T'));
+    player.board.push(Helpers.scienceCard('C'));
+    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(10);
+  });
 });

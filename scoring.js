@@ -1,11 +1,48 @@
 var _ = require('underscore');
 var invariant = require('./invariant');
+var constants = require('./constants');
 var tokens_by_age = [1, 3, 5];
 
-var optimize_science = function (sciences) {
-  // TODO optimize science score given array of sciences
-  // only difficult part is that some sciences might be an array of choices
-  return 0;
+var optimize_science = function (sciences, path) {
+  // This is a DFS. The science is sliced so do whatever you want with it
+  // but path doesn't get cloned, so make sure to push/pop correctly.
+  // That kinda sucks but #yolo.
+  
+  path = path || [];
+  // Base case - calculate value of path
+  if (!sciences.length) {
+    var scienceTypeCount = {};
+    _.each(path, function(type) {
+      scienceTypeCount[type] = (scienceTypeCount[type] || 0) + 1;
+    });
+
+    var total = 0;
+    var minCount;
+    _.each(constants.SCIENCE, function(type) {
+      var count = scienceTypeCount[type] || 0;
+      minCount = minCount ? Math.min(minCount, count) : count;
+      total += Math.pow(count, 2);
+    });
+    return total + (minCount || 0) * 7;
+  }
+  
+  var scienceOption = sciences[0];
+  var nextSciences = sciences.slice(1, sciences.length);
+  if (typeof scienceOption === 'object') {
+    var max = 0;
+    _.each(scienceOption, function(science) {
+      path.push(science);
+      max = Math.max(max, optimize_science(nextSciences, path));
+      path.pop();
+    });
+    return max;
+  } else if (typeof scienceOption === 'string') {
+    path.push(scienceOption);
+    var val = optimize_science(nextSciences, path);
+    path.pop();
+    return val;
+  }
+  invariant.invariant_violation('Sciences must be an array or string.');
 }
 
 module.exports = {
@@ -57,7 +94,7 @@ module.exports = {
       } else if (typeof card.vps === 'number') {
         score[card.type] += card.vps;
       } else {
-        invariant_violation('card vp property should be undefined, a function or a number');
+        invariant.invariant_violation('card vp property should be undefined, a function or a number');
       }
     });
     // accumulate sciences
