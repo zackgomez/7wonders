@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Actions = require('./actions');
 var invariant = require('./invariant');
 
 var Player = function(name, selected_wonder, play_func) {
@@ -12,6 +13,19 @@ var Player = function(name, selected_wonder, play_func) {
   this.left_player = null;
   this.right_player = null;
 }
+
+Player.prototype.canPlayFinalCard = function () {
+  // TODO check if it has a card/wonder upgrade that lets it do this
+  return false;
+};
+
+Player.prototype.getChoice = function () {
+  // special case for hand size 1
+  if (this.current_hand.length === 1 && !this.canPlayFinalCard()) {
+    return Actions.discard(0);
+  }
+  return this.play_func(this);
+};
 
 Player.prototype.getMilitaryStrength = function () {
   return _.reduce(this.board, function (accumulator, card) {

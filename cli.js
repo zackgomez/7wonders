@@ -13,4 +13,4 @@ var bot_play_func = function (player) {
 };
 
 console.log('Starting first age');
-Game.createWithNRandomSelectionBots(4, bot_play_func).run().dumpState();
+Game.createWithNIdenticalPlayers(4, bot_play_func).run().dumpState();

@@ -6,6 +6,7 @@ var wonders = require('./wonders');
 var invariant = require('./invariant');
 var Player = require('./player');
 var Scoring = require('./scoring');
+var rotate_array = require('./rotate_array');
 var invariant_violation = require('./invariant').invariant_violation;
 
 var Game = function(player_funcs) {
@@ -37,9 +38,9 @@ var Game = function(player_funcs) {
   }
 };
 
-Game.createWithNRandomSelectionBots = function(num_bots, bot_func) {
+Game.createWithNIdenticalPlayers = function(num_players, play_func) {
   return new Game(
-    _(num_bots).times(function () { return bot_func; })
+    _(num_players).times(function () { return play_func; })
   );
 };
 
@@ -71,6 +72,7 @@ Game.prototype.handleChoice = function (player, choice) {
     player.board.push(card);
   } else if (choice.action === Actions.constants.SELL) {
     player.money += Game.MONEY_FOR_SELL;
+    this.discards.push(card);
   } else if (choice.action === Actions.constants.UPGRADE_WONDER) {
     var wonder_count = player.getCardsOfType('wonder').length;
     invariant(
@@ -80,33 +82,42 @@ Game.prototype.handleChoice = function (player, choice) {
     player.board.push(
       Cards.wrapWonderStage(player.wonder.stages[wonder_count], card)
     );
+  } else if (choice.action === Actions.constants.DISCARD) {
+    this.discards.push(card);
   } else {
     invariant_violation('unknown choice action '+choice.action);
   }
 };
 
 Game.prototype.playRound = function () {
-  var passed_cards = _.map(this.players, function(p) {
-    var choice = p.play_func(p);
-
+  _.each(this.players, function (p) {
+    var choice = p.getChoice();
     this.handleChoice(p, choice);
+  }, this);
 
-    var to_pass = p.current_hand;
-    p.current_hand = [];
-    return to_pass;
-  }.bind(this));
-
-  if (passed_cards[0].length == 1) {
-    _.each(passed_cards, function (cards) {
-      this.discards.push(cards[0]);
-    }.bind(this));
-  } else {
-    console.log('Players picking card, passing '+passed_cards[0].length);
-    for (var i = 0; i < this.players.length; i++) {
-      this.players[i].current_hand = passed_cards[i];
-    }
-  }
+  invariant(
+    this.age in Game.PASS_DIRECTION_FOR_AGE,
+    'no pass direction for age'
+  )
+  this.passCards(Game.PASS_DIRECTION_FOR_AGE[this.age]);
 };
+
+Game.prototype.passCards = function (direction) {
+  invariant(
+    direction === Game.PASS_LEFT || direction === Game.PASS_RIGHT,
+    'invalid pass direction'
+  );
+
+  var cards = _.map(this.players, function (player) {
+    var hand = player.current_hand;
+    player.current_hand = [];
+    return hand;
+  });
+  cards = rotate_array(cards, direction === Game.PASS_LEFT ? -1 : 1);
+  _.each(cards, function (hand, i) {
+    this.players[i].current_hand = hand;
+  }, this);
+}
 
 Game.prototype.startAge = function(age_num) {
   console.log('Starting age '+age_num);
@@ -141,5 +152,12 @@ Game.prototype.dumpState = function() {
 
 Game.HAND_SIZE = 7;
 Game.MONEY_FOR_SELL = 3;
+Game.PASS_LEFT = 'left';
+Game.PASS_RIGHT = 'right';
+Game.PASS_DIRECTION_FOR_AGE = {
+  1: Game.PASS_LEFT,
+  2: Game.PASS_RIGHT, 
+  3: Game.PASS_LEFT,
+};
 
 module.exports = Game;

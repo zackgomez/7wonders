@@ -2,6 +2,7 @@ var actions = {
   PLAY: 'play',
   SELL: 'sell',
   UPGRADE_WONDER: 'upgrade',
+  DISCARD: 'discard',
 };
 
 var make_action = function (action, card) {
@@ -24,5 +25,9 @@ module.exports = {
 
   upgradeWonder: function (card_index) {
     return make_action(actions.UPGRADE_WONDER, card_index);
+  },
+
+  discard: function (card_index) {
+    return make_action(actions.DISCARD, card_index);
   },
 };
