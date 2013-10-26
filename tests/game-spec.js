@@ -79,6 +79,22 @@ describe('game tests', function() {
     });
   });
 
+  it('should get money from playing a money effect card', function () {
+    var game = Game.createWithNIdenticalPlayers(4, function (player) {
+      return Actions.play(0);
+    });
+    game.startAge(1)
+    var player = game.players[0];
+    player.name = _.uniqueId('name');
+    console.log(player.name);
+    player.money = 0;
+    var effect_hit = false;
+    player.current_hand[0] = {effect: function () { effect_hit = true; }};
+
+    game.playRound();
+    expect(effect_hit).toBe(true);
+  });
+
   it('should sell upgrade wonder propertly', function () {
     var game = Game.createWithNIdenticalPlayers(4, function (player) { });
     game.startAge(1)

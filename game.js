@@ -68,7 +68,11 @@ Game.prototype.handleChoice = function (player, choice) {
   // remove card from hand
   player.current_hand.splice(choice, 1);
 
+  var extra_effect = null;
   if (choice.action === Actions.constants.PLAY) {
+    if (card.effect) {
+      extra_effect = function () { return card.effect(player); };
+    }
     player.board.push(card);
   } else if (choice.action === Actions.constants.SELL) {
     player.money += Game.MONEY_FOR_SELL;
@@ -87,13 +91,20 @@ Game.prototype.handleChoice = function (player, choice) {
   } else {
     invariant_violation('unknown choice action '+choice.action);
   }
+
+  return extra_effect;
 };
 
 Game.prototype.playRound = function () {
-  _.each(this.players, function (p) {
+  var extra_effects = _.map(this.players, function (p) {
     var choice = p.getChoice();
-    this.handleChoice(p, choice);
+    return this.handleChoice(p, choice);
   }, this);
+
+  _.each(extra_effects, function (effect) {
+    if (!effect) return;
+    effect();
+  });
 
   invariant(
     this.age in Game.PASS_DIRECTION_FOR_AGE,
@@ -117,7 +128,7 @@ Game.prototype.passCards = function (direction) {
   _.each(cards, function (hand, i) {
     this.players[i].current_hand = hand;
   }, this);
-}
+};
 
 Game.prototype.startAge = function(age_num) {
   console.log('Starting age '+age_num);

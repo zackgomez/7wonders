@@ -14,7 +14,6 @@ var wonders = [
     resource: 'G',
     stages: [
       {cost: ['S', 'S'], vps: 3},
-      // TODO use 'or' construct for resources
       {cost: ['O', 'O'], resources: [['W', 'B', 'S', 'O']]},
       {cost: ['G', 'G'], vps: 7}
     ]
@@ -31,7 +30,6 @@ var wonders = [
     resource: 'B',
     stages: [
       {cost: ['B', 'B'], vps: 3},
-      // TODO use 'or' construct for science
       {cost: ['W', 'W', 'W'], science: ['T', 'C', 'G']},
       {cost: ['B', 'B', 'B', 'B'], vps: 7}
     ]
