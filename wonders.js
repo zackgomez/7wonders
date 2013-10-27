@@ -124,7 +124,8 @@ var wonders_b = [
   }
 ];
 
+var wonders = _.zip(wonders_a, wonders_b);
+
 module.exports = {
-  A: wonders_a,
-  B: wonders_b,
+  wonders: wonders,
 };

@@ -3,20 +3,24 @@ var Actions = require('./actions');
 var Cards = require('./cards');
 var invariant = require('./invariant');
 
-var Player = function(name, selected_wonder, play_func) {
+var Player = function(name, play_func) {
   this.name = name;
   this.play_func = play_func;
-  this.wonder = selected_wonder;
+  this.wonder = null;
   this.money = 3;
   this.current_hand = [];
   this.board = [];
   this.military_tokens = [];
   this.left_player = null;
   this.right_player = null;
+}
 
+Player.prototype.selectWonder = function (wonder_a, wonder_b) {
+  // TODO let player select wonder
+  this.wonder = wonder_a;
   // add starting resource 'card' to board
   this.board.push(Cards.wrapWonderResource(this.wonder.resource));
-}
+};
 
 Player.prototype.canPlayFinalCard = function () {
   // TODO check if it has a card/wonder upgrade that lets it do this

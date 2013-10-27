@@ -13,19 +13,19 @@ var Game = function(player_funcs) {
   var num_players = player_funcs.length;
   invariant(num_players >= 3 && num_players <= 7, '3-7 players supported');
 
-  var selected_wonders = _.sample(wonders_a, num_players);
+  var selected_wonders = _.sample(wonders.wonders, num_players);
+    console.log(selected_wonders);
 
   this.discards = [];
   this.players = [];
   this.scores = [];
   for (var i = 0; i < num_players; i++) {
-    this.players.push(
-      new Player(
-        'player'+(i+1), 
-        selected_wonders[i],
-        player_funcs[i]
-      )
+    var player = new Player(
+      'player'+(i+1), 
+      player_funcs[i]
     );
+    player.selectWonder(selected_wonders[i][0], selected_wonders[i][1]);
+    this.players.push(player);
     this.scores.push(null);
   }
 
