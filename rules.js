@@ -1,71 +1,173 @@
 var _ = require('underscore');
 
 module.exports = {
-  // TODO: take into account neighbors
-  canPlayerBuildCard: function(player, new_card) {
+  getNullableCostToBuild: function(player, new_card) {
     var already_built = _.find(player.board, function (card) {
       return card.name == new_card.name;
     });
 
-    if (already_built) return false;
+    if (already_built) return null;
 
     var can_upgrade = _.find(player.board, function (card) {
       return card.upgrades_to && card.upgrades_to == new_card.name;
     });
 
-    if (can_upgrade) return true;
+    if (can_upgrade) return new Path();
 
     if (!new_card.resource_cost) {
       var money_cost = new_card.money_cost || 0;
-      return player.money > money_cost;
+      if (player.money >= money_cost) {
+        return new Path().addBankCost(money_cost);
+      }
+
+      return null;
     }
 
-    var resource_type_to_num_needed = accumulate_resources_by_type(
-      new_card.resource_cost
-    );
+    var cost_map = accumulate_resources_by_type(new_card.resource_cost);
 
-    // We should add neighbor borowwing and have each path have a cost
-    var player_resources = [[]];
+    var paths = [ new Path() ];
     _.each(player.board, function(card) {
-      if (card.type == 'basic_resource' || card.type == 'advanced_resource') {
-        _.each(card.resources, function(resource) {
-          player_resources = player_resources || []
-          _.each(player_resources, function (current_path) {
-            current_path.push(resource);
-          });
-        });
-      } else if (card.type == 'economy') {
+      if (card.type == 'basic_resource' || 
+          card.type == 'advanced_resource' ||
+          card.type == 'economy'
+         ) {
         var to_add = [];
-        _.each(player_resources, function (current_path) {
-          _.each(card.resources[0], function(resource) {
-            to_add.push(current_path.concat(resource));
+        if (Array.isArray(card.resources[0])) {
+          _.each(paths, function (current_path) {
+            _.each(card.resources[0], function(resource) {
+              to_add.push(current_path.clone().addResource(resource));
+            });
           });
-        });
-        player_resources = to_add;
-      }
+          paths = to_add;
+        } else {
+          _.each(card.resources, function(resource) {
+            _.each(paths, function (current_path) {
+              current_path.addResource(resource);
+            });
+          });
+        }
+      } 
     });
 
-    return _.some(player_resources, function (path) {
-      return this.resourcesAreSufficient(path, resource_type_to_num_needed);
-    }, this);
-  },
+    var path_with_own_resources = _.find(paths, function(path) {
+      return path_is_sufficient(path, cost_map);
+    });
 
-  resourcesAreSufficient: function(player_resource_list, required_resource_map) {
-    var player_resources_by_type = accumulate_resources_by_type(
-      player_resource_list
+    if (path_with_own_resources) return path_with_own_resources;
+
+    paths = this.addNeighborResources(
+      paths, 
+      player.left_player, 
+      Path.prototype.addLeftCost
     );
 
-    for (resource_type in required_resource_map) {
-      var available_resource = player_resources_by_type[resource_type] || 0;
-      var required_resource = required_resource_map[resource_type];
-      if (available_resource < required_resource) {
-        return false;
-      }
+    paths = this.addNeighborResources(
+      paths, 
+      player.right_player,
+      Path.prototype.addRightCost
+    );
+
+    // Find cheapest path
+    paths.sort(
+      function (p1, p2) { return p1.getTotalCost() - p2.getTotalCost(); }
+    );
+
+    var path = _.find(paths, function(path) {
+      return path_is_sufficient(path, cost_map);
+    });
+
+    if (!path || path.getTotalCost() > player.money) {
+      return null;
     }
 
-    return true;
-  }
+    return path;
+  },
+
+  // TODO: add in trading posts!
+  addNeighborResources: function(player_resources, neighbor, add_cost_func) {
+    _.each(neighbor.board, function (card) {
+      if (card.type == 'basic_resource' || card.type == 'advanced_resource') {
+        if (Array.isArray(card.resources[0])) {
+          var to_add = [];
+          _.each(player_resources, function (current_path) {
+            _.each(card.resources[0], function(resource) {
+              var new_path = current_path.clone().addResource(resource);
+              add_cost_func.call(new_path, 2)
+              to_add.push(new_path);
+            });
+          });
+          player_resources = player_resources.concat(to_add);
+        } else {
+          _.each(card.resources, function(resource) {
+            var to_add = [];
+            _.each(player_resources, function (current_path) {
+              var new_path = current_path.clone().addResource(resource);
+              add_cost_func.call(new_path, 2)
+              to_add.push(new_path);
+            });
+            player_resources = player_resources.concat(to_add);
+          });
+        }
+      } 
+    });
+
+    return player_resources;
+  },
+
+  Path: Path,
 };
+
+function Path(path, cost) {
+  this.path = path || {};
+  this.cost = cost || 0;
+  this.leftCost = 0;
+  this.rightCost = 0;
+}
+
+Path.prototype.clone = function() {
+  var new_path = new Path();
+  new_path.path = _.clone(this.path);
+  new_path.cost = this.cost;
+  new_path.leftCost = this.leftCost;
+  new_path.rightCost = this.rightCost;
+  return new_path;
+};
+
+Path.prototype.getTotalCost = function() {
+  return this.leftCost + this.rightCost + this.cost;
+};
+
+Path.prototype.addResource = function(resource) {
+  this.path[resource] = (this.path[resource] || 0) + 1;
+  return this;
+};
+
+Path.prototype.addBankCost = function(cost) {
+  this.cost += cost;
+  return this;
+};
+
+Path.prototype.addLeftCost = function(cost) {
+  this.leftCost += cost;
+  return this;
+};
+
+Path.prototype.addRightCost = function(cost) {
+  this.rightCost += cost;
+  return this;
+};
+
+function path_is_sufficient(path, cost_map) {
+  for (resource_type in cost_map) {
+    var available_resource = path.path[resource_type] || 0;
+    var required_resource = cost_map[resource_type];
+    if (available_resource < required_resource) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 function accumulate_resources_by_type(resources) {
   return _.reduce(
