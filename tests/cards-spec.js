@@ -15,9 +15,6 @@ describe('card data sanity', function () {
           card.upgrades_from :
           [card.upgrades_from];
         _.each(names, function (name) {
-          if (!name_set[name]) {
-            console.log('doh', name);
-          }
           expect(name_set[name]).toBeDefined();
         });
       }

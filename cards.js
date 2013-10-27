@@ -233,6 +233,12 @@ var cards = [
   },
 ];
 
+// give each card a unique id
+cards = _.map(cards, function (card) {
+  card.id = _.uniqueId();
+  return card;
+});
+
 exports.cards = cards;
 exports.wrapWonderStage = function (stage, card) {
   var wrapper = {
@@ -240,6 +246,17 @@ exports.wrapWonderStage = function (stage, card) {
     type: 'wonder',
     name: 'Wonder Upgrade',
     wrapped_card: card,
+    id: _.uniqueId(),
   };
   return _.extend(wrapper, stage);
+};
+
+exports.wrapWonderResource = function (resource) {
+  return wrapper = {
+    age: 'wonder',
+    type: 'wonder-resource',
+    name: 'Wonder Resource',
+    resource: resource,
+    id: _.uniqueId(),
+  };
 };

@@ -15,7 +15,8 @@ var prompt_user = function(prompt, callback) {
   return callback(input);
 };
 
-var bot_play_func = function (player) {
+var bot_play_func = function (player, cards) {
+  invariant(cards.length > 0, 'must have some cards to pick from!');
   return Actions.play(0);
 };
 
@@ -35,7 +36,8 @@ var get_player_prompt = function (player) {
   return str;
 };
 
-var user_play_func = function (player) {
+var user_play_func = function (player, cards) {
+  invariant(cards.length > 0, 'must have some cards to pick from!');
   var card = prompt_user(get_player_prompt(player), function(card) {
     return card;
   });
@@ -48,4 +50,4 @@ var get_play_func = function() {
 };
 
 console.log('Starting first age');
-Game.createWithNIdenticalPlayers(4, get_play_mode()).run().dumpState();
+Game.createWithNIdenticalPlayers(4, get_play_func()).run().dumpState();

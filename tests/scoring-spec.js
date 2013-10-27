@@ -39,30 +39,30 @@ describe('scoring tests', function () {
 
   it('should correctly calculate and round money score', function () {
     player.money = 0;
-    expect(Scoring.getEndGameScoreForPlayer(player).money).toEqual(0);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).money).toEqual(0);
 
     player.money = 5;
-    expect(Scoring.getEndGameScoreForPlayer(player).money).toEqual(1);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).money).toEqual(1);
 
     player.money = 6;
-    expect(Scoring.getEndGameScoreForPlayer(player).money).toEqual(2);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).money).toEqual(2);
   });
 
   it('should correctly sum military score', function () {
     player.military_tokens = [-1, 3, 5];
-    expect(Scoring.getEndGameScoreForPlayer(player).military).toEqual(7);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).military).toEqual(7);
 
     player.military_tokens = [];
-    expect(Scoring.getEndGameScoreForPlayer(player).military).toEqual(0);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).military).toEqual(0);
 
     player.military_tokens = [-1, -1, -1, 3, -1];
-    expect(Scoring.getEndGameScoreForPlayer(player).military).toEqual(-1);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).military).toEqual(-1);
   });
 
   it('should correctly calculate victory point functions', function () {
     player.board.push(Helpers.victoryCardWithFunc(function () { return 5; }));
     player.board.push(Helpers.victoryCard(3));
-    expect(Scoring.getEndGameScoreForPlayer(player).victory).toEqual(8);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).victory).toEqual(8);
   });
 
   it('should correctly split victory and guild points', function () {
@@ -71,7 +71,7 @@ describe('scoring tests', function () {
     player.board.push(Helpers.victoryCard(3));
     player.board.push(Helpers.guildCardWithVPs(15));
 
-    var score = Scoring.getEndGameScoreForPlayer(player);
+    var score = Scoring.getEndGameScoreForPlayer(null, player);
     expect(score.victory).toEqual(8);
     expect(score.guild).toEqual(15);
     expect(score.total).toEqual(23);
@@ -83,36 +83,36 @@ describe('scoring tests', function () {
 
     player.board.push(Cards.wrapWonderStage(player.wonder.stages[0]));
 
-    var score = Scoring.getEndGameScoreForPlayer(player);
+    var score = Scoring.getEndGameScoreForPlayer(null, player);
     expect(score.wonder).toEqual(3);
 
     player.board.push(Cards.wrapWonderStage(player.wonder.stages[1]));
-    var score = Scoring.getEndGameScoreForPlayer(player);
+    var score = Scoring.getEndGameScoreForPlayer(null, player);
     expect(score.wonder).toEqual(8);
   });
   
   it('should correctly optimize science points', function () {
     player.board.push(Helpers.scienceCard('T'));
-    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(1);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).science).toEqual(1);
     
     player.board.push(Helpers.scienceCard('C'));
-    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(2);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).science).toEqual(2);
 
     player.board.push(Helpers.scienceCard('T'));
-    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(5);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).science).toEqual(5);
 
     player.board.push(Helpers.scienceCard('G'));
-    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(13);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).science).toEqual(13);
 
     player.board.push(Helpers.scienceCard('T'));
-    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(18);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).science).toEqual(18);
 
     player.board.push(Helpers.scienceCard('C'))
     player.board.push(Helpers.scienceCard(['T', 'C', 'G']));
-    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(31);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).science).toEqual(31);
     
     player.board.push(Helpers.scienceCard(['T', 'C', 'G']));
-    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(38);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).science).toEqual(38);
   });
   
   it('should correctly optimize wonder science points', function () {
@@ -120,6 +120,6 @@ describe('scoring tests', function () {
     player.board.push(Cards.wrapWonderStage(player.wonder.stages[0]));
     player.board.push(Helpers.scienceCard('T'));
     player.board.push(Helpers.scienceCard('C'));
-    expect(Scoring.getEndGameScoreForPlayer(player).science).toEqual(10);
+    expect(Scoring.getEndGameScoreForPlayer(null, player).science).toEqual(10);
   });
 });

@@ -4,20 +4,20 @@ var Helpers = require('./helpers');
 
 describe('tests for rules', function () {
   it("should not let you build same card twice", function () {
-    var player = new Player();
+    var player = Helpers.basicPlayer();
     player.board.push({ name: 'Baths' });
     expect(Rules.canPlayerBuildCard(player, { name: 'Baths' })).toBeFalsy();
   });
 
   it("should let you build cards off upgrades even if you don't have enough "+
     "or resources", function () {
-    var player = new Player();
+    var player = Helpers.basicPlayer();
     player.board.push({ name: 'Baths', upgrades_to: 'Aqueduct'});
     expect(Rules.canPlayerBuildCard(player, { name: 'Aqueduct' })).toBeTruthy();
   });
 
   it("should let you build cards you have enough resources for (simple)", function() {
-    var player = new Player();
+    var player = Helpers.basicPlayer();
     player.board.push(Helpers.basicResourceCard(['B']));
     var can_build = Rules.canPlayerBuildCard(
       player, 
@@ -27,7 +27,7 @@ describe('tests for rules', function () {
   });
 
   it("should recognize double resource cards", function() {
-    var player = new Player();
+    var player = Helpers.basicPlayer();
     player.board.push(Helpers.basicResourceCard(['B', 'B']));
     player.board.push(Helpers.basicResourceCard(['W']));
     var can_build = Rules.canPlayerBuildCard(
@@ -38,7 +38,7 @@ describe('tests for rules', function () {
   });
 
   it("should not let you build cards you don't have enough resources for (simple)", function() {
-    var player = new Player();
+    var player = Helpers.basicPlayer();
     player.board.push(Helpers.basicResourceCard(['B']));
     var can_build = Rules.canPlayerBuildCard(
       player, 
@@ -48,7 +48,7 @@ describe('tests for rules', function () {
   });
 
   it("should find builds available through wild cards", function() {
-    var player = new Player();
+    var player = Helpers.basicPlayer();
     player.board.push(Helpers.economyCard([['O', 'W']]));
     var can_build = Rules.canPlayerBuildCard(
       player, 
@@ -58,7 +58,7 @@ describe('tests for rules', function () {
   });
 
   it("should not allow double-counting of wild cards", function() {
-    var player = new Player();
+    var player = Helpers.basicPlayer();
     player.board.push(Helpers.economyCard([['O', 'W']]));
     var can_build = Rules.canPlayerBuildCard(
       player, 
@@ -68,7 +68,7 @@ describe('tests for rules', function () {
   });
 
   it("should find builds available through multiple wild cards", function() {
-    var player = new Player();
+    var player = Helpers.basicPlayer();
     player.board.push(Helpers.economyCard([['O', 'W']]));
     player.board.push(Helpers.economyCard([['O', 'W', 'S', 'B']]));
     player.board.push(Helpers.economyCard([['G', 'P', 'L']]));
