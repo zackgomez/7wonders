@@ -13,7 +13,7 @@ var Game = function(player_funcs) {
   var num_players = player_funcs.length;
   invariant(num_players >= 3 && num_players <= 7, '3-7 players supported');
 
-  var selected_wonders = _.sample(wonders, num_players);
+  var selected_wonders = _.sample(wonders_a, num_players);
 
   this.discards = [];
   this.players = [];

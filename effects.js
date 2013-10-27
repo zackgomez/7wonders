@@ -87,4 +87,7 @@ module.exports = {
       return amount * count_completed_wonder_stages(player, direction);
     };
   },
+  play_final_card_effect: function (game, player) {
+    // TODO
+  },
 };
