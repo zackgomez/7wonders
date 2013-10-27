@@ -1,11 +1,12 @@
 var invariant = require('../invariant');
 var Cards = require('../cards');
+var Player = require('../player');
 
 var name_counter = 0;
 
 module.exports = {
   basicWonder: function() {
-    return {stages: [{vps: 3}, {vps: 5}]};
+    return {stages: [{vps: 3}, {vps: 5}], resource: 'W'};
   },
 
   militaryCard: function(strength) {
@@ -63,5 +64,9 @@ module.exports = {
 
   wrapWonderStage: function(stage) {
     return Cards.wrapWonderStage(stage, victoryCard(0));
+  },
+
+  basicPlayer: function () {
+    return new Player('basic_player', this.basicWonder(), function () { });
   },
 };

@@ -243,3 +243,12 @@ exports.wrapWonderStage = function (stage, card) {
   };
   return _.extend(wrapper, stage);
 };
+
+exports.wrapWonderResource = function (resource) {
+  return wrapper = {
+    age: 'wonder',
+    type: 'wonder-resource',
+    name: 'Wonder Resource',
+    resource: resource,
+  };
+};

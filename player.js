@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Actions = require('./actions');
+var Cards = require('./cards');
 var invariant = require('./invariant');
 
 var Player = function(name, selected_wonder, play_func) {
@@ -12,6 +13,9 @@ var Player = function(name, selected_wonder, play_func) {
   this.military_tokens = [];
   this.left_player = null;
   this.right_player = null;
+
+  // add starting resource 'card' to board
+  this.board.push(Cards.wrapWonderResource(this.wonder.resource));
 }
 
 Player.prototype.canPlayFinalCard = function () {

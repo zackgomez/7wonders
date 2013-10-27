@@ -55,10 +55,13 @@ describe('game tests', function() {
       return Actions.play(0);
     });
     game.startAge(1)
-    game.playRound();
     var players = game.players;
-    _.each(players, function (player) {
-      expect(player.board.length).toEqual(1)
+    var hand_len = _.map(players, function (player) {
+      return player.board.length;
+    });
+    game.playRound();
+    _.each(players, function (player, i) {
+      expect(player.board.length).toEqual(hand_len[i] + 1)
     });
   });
 
@@ -94,7 +97,7 @@ describe('game tests', function() {
     expect(effect_hit).toBe(true);
   });
 
-  it('should sell upgrade wonder propertly', function () {
+  it('should play upgrade wonder properly', function () {
     var game = Game.createWithNIdenticalPlayers(4, function (player) { });
     game.startAge(1)
 
@@ -102,8 +105,8 @@ describe('game tests', function() {
     player.wonder = {stages: [{vps: 3}]};
     game.handleChoice(player, Actions.upgradeWonder(0));
 
-    expect(player.board.length).toEqual(1);
-    expect(player.board[0].type).toEqual('wonder');
-    expect(player.board[0].vps).toEqual(3);
+    expect(player.board.length).toEqual(2);
+    expect(player.board[1].type).toEqual('wonder');
+    expect(player.board[1].vps).toEqual(3);
   });
 });

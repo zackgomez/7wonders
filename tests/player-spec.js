@@ -3,8 +3,8 @@ var Helpers = require('./helpers');
 
 describe('player tests', function () {
   it('should compute military correctly', function() {
-    var p = new Player();
-    p.wonder = {stages: [Helpers.militaryCard(9)]};
+    var wonder = {stages: [Helpers.militaryCard(9)], resource: 'W'};
+    var p = new Player('name', wonder, function () { });
     expect(p.getMilitaryStrength()).toBe(0);
 
     p.board = [ Helpers.militaryCard(1) ];
@@ -24,9 +24,9 @@ describe('player tests', function () {
   });
 
   it('should include built military wonders in strength', function () {
-    var player = new Player();
+    var wonder = {stages: [Helpers.militaryCard(1), Helpers.militaryCard(2)]};
+    var player = new Player('name', wonder, function () { });
 
-    player.wonder = {stages: [Helpers.militaryCard(1), Helpers.militaryCard(2)]};
     player.board.push(Helpers.wrapWonderStage(player.wonder.stages[0]));
     player.board.push(Helpers.militaryCard(2));
 
