@@ -86,7 +86,6 @@ describe('game tests', function() {
     game.startAge(1)
     var player = game.players[0];
     player.name = _.uniqueId('name');
-    console.log(player.name);
     player.money = 0;
     var effect_hit = false;
     player.current_hand[0] = {effect: function () { effect_hit = true; }};
