@@ -54,7 +54,7 @@ Game.prototype.run = function() {
     this.resolveMilitary(age);
   }.bind(this));
 
-  this.scores = _.map(this.players, Scoring.getEndGameScoreForPlayer);
+  this.scores = _.map(this.players, _.partial(Scoring.getEndGameScoreForPlayer, this));
 
   return this;
 };
@@ -71,7 +71,7 @@ Game.prototype.handleChoice = function (player, choice) {
   var extra_effect = null;
   if (choice.action === Actions.constants.PLAY) {
     if (card.effect) {
-      extra_effect = function () { return card.effect(player); };
+      extra_effect = function () { return card.effect(this, player); };
     }
     player.board.push(card);
   } else if (choice.action === Actions.constants.SELL) {
@@ -102,8 +102,8 @@ Game.prototype.playRound = function () {
   }, this);
 
   _.each(extra_effects, function (effect) {
-    if (!effect) return;
-    effect();
+    // JS ONE LINER SUCH HOTNESS WOW
+    effect && effect();
   });
 
   invariant(

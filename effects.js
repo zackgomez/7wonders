@@ -34,33 +34,33 @@ var count_completed_wonder_stages = function (player, direction) {
 module.exports = {
   make_give_money_effect: function (amount) {
     invariant(amount > 0, 'must give a positive amount of money');
-    return function(player) {
+    return function (game, player) {
       player.money += amount;
     };
   },
   make_money_for_card_type_effect: function (card_type, direction, amount) {
     constants.assertDirection(direction);
-    return function (player) {
+    return function (game, player) {
       player.money += amount * count_card_types(player, direction, card_type);
     };
   },
-  play_discarded_card_effect: function (player) {
+  play_discarded_card_effect: function (game, player) {
     // TODO
   },
   make_trading_resource: function (direction, tradable_resources) {
     constants.assertDirection(direction);
-    return function(player) {
+    return function (game, player) {
       // TODO return available resources/cost
       return [];
     };
   },
   make_vps_for_card_type_effect: function (card_type, direction, amount) {
     constants.assertDirection(direction);
-    return function(player) {
+    return function (game, player) {
       return amount * count_card_types(player, direction, card_type);
     };
   },
-  vps_for_neighbor_military_losses: function (player) {
+  vps_for_neighbor_military_losses: function (game, player) {
     return _.reduce([player.left_player, player.right_player], function (s, p) {
       var negative_token_count = _.reduce(p.military_tokens, function (s, token) {
         return s + (token === -1 ? 1 : 0);
@@ -69,21 +69,21 @@ module.exports = {
     }, 0);
   },
   make_sum_vps_effect: function (items) {
-    return function(player) {
+    return function (game, player) {
       return _.reduce(items, function (total, item) {
-          return total + item(player);
+          return total + item(game, player);
         }, 0);
     };
   },
   make_money_for_wonder_stages_effect: function (direction, amount) {
     constants.assertDirection(direction);
-    return function (player) {
+    return function (game, player) {
       player.money += amount * count_completed_wonder_stages(player, direction);
     };
   },
   make_vps_for_wonder_stages_effect: function (direction, amount) {
     constants.assertDirection(direction);
-    return function (player) {
+    return function (game, player) {
       return amount * count_completed_wonder_stages(player, direction);
     };
   },

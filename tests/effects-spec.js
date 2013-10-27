@@ -20,7 +20,7 @@ describe('effects tests', function () {
     var effect = effects.make_give_money_effect(5);
 
     player.money = 0;
-    effect(player);
+    effect(null, player);
     expect(player.money).toEqual(5);
   });
 
@@ -28,7 +28,7 @@ describe('effects tests', function () {
     left_player.military_tokens = [-1, 3, 5];
     right_player.military_tokens = [-1, -1, -1];
 
-    expect(effects.vps_for_neighbor_military_losses(player)).toEqual(4);
+    expect(effects.vps_for_neighbor_military_losses(null, player)).toEqual(4);
   });
 
   it('should properly calculate neighbor card points', function () {
@@ -44,19 +44,19 @@ describe('effects tests', function () {
     player.board.push(guildCardWithVPs(0));
 
     expect(
-      effects.make_vps_for_card_type_effect('victory', constants.SELF, 1)(player)
+      effects.make_vps_for_card_type_effect('victory', constants.SELF, 1)(null, player)
     ).toEqual(1);
     expect(
-      effects.make_vps_for_card_type_effect('victory', constants.LEFT, 1)(player)
+      effects.make_vps_for_card_type_effect('victory', constants.LEFT, 1)(null, player)
     ).toEqual(2);
     expect(
-      effects.make_vps_for_card_type_effect('victory', constants.RIGHT, 1)(player)
+      effects.make_vps_for_card_type_effect('victory', constants.RIGHT, 1)(null, player)
     ).toEqual(3);
     expect(
-      effects.make_vps_for_card_type_effect('victory', constants.NEIGHBORS, 1)(player)
+      effects.make_vps_for_card_type_effect('victory', constants.NEIGHBORS, 1)(null, player)
     ).toEqual(5);
     expect(
-      effects.make_vps_for_card_type_effect('victory', constants.ALL, 1)(player)
+      effects.make_vps_for_card_type_effect('victory', constants.ALL, 1)(null, player)
     ).toEqual(6);
   });
 
@@ -66,22 +66,22 @@ describe('effects tests', function () {
     left_player.board.push(Helpers.wrapWonderStage(player.wonder.stages[1]));
 
     expect(
-      effects.make_vps_for_wonder_stages_effect(constants.SELF, 1)(player)
+      effects.make_vps_for_wonder_stages_effect(constants.SELF, 1)(null, player)
     ).toEqual(1);
     expect(
-      effects.make_vps_for_wonder_stages_effect(constants.LEFT, 1)(player)
+      effects.make_vps_for_wonder_stages_effect(constants.LEFT, 1)(null, player)
     ).toEqual(2);
     expect(
-      effects.make_vps_for_wonder_stages_effect(constants.RIGHT, 1)(player)
+      effects.make_vps_for_wonder_stages_effect(constants.RIGHT, 1)(null, player)
     ).toEqual(0);
     expect(
-      effects.make_vps_for_wonder_stages_effect(constants.NEIGHBORS, 1)(player)
+      effects.make_vps_for_wonder_stages_effect(constants.NEIGHBORS, 1)(null, player)
     ).toEqual(2);
     expect(
-      effects.make_vps_for_wonder_stages_effect(constants.ALL, 1)(player)
+      effects.make_vps_for_wonder_stages_effect(constants.ALL, 1)(null, player)
     ).toEqual(3);
     expect(
-      effects.make_vps_for_wonder_stages_effect(constants.ALL, 3)(player)
+      effects.make_vps_for_wonder_stages_effect(constants.ALL, 3)(null, player)
     ).toEqual(9);
   });
 
@@ -91,7 +91,7 @@ describe('effects tests', function () {
     left_player.board.push(Helpers.wrapWonderStage(player.wonder.stages[1]));
 
     player.money = 0;
-    effects.make_money_for_wonder_stages_effect(constants.SELF, 1)(player);
+    effects.make_money_for_wonder_stages_effect(constants.SELF, 1)(null, player);
     expect(player.money).toEqual(1);
   });
 });

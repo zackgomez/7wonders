@@ -69,7 +69,7 @@ module.exports = {
     return tokens;
   },
 
-  getEndGameScoreForPlayer: function (player) {
+  getEndGameScoreForPlayer: function (game, player) {
     var score = {};
     // 1pt for each 3 coins
     score.money = Math.floor(player.money / 3);
@@ -90,7 +90,7 @@ module.exports = {
         return;
       }
       if (typeof card.vps === 'function') {
-        score[card.type] += card.vps(player);
+        score[card.type] += card.vps(game, player);
       } else if (typeof card.vps === 'number') {
         score[card.type] += card.vps;
       } else {
