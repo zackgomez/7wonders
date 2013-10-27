@@ -44,10 +44,12 @@ var user_play_func = function (player, cards) {
   return Actions.play(parseInt(card.slice(0,1)));
 };
 
-var get_play_func = function() {
-  //return bot_play_func;
-  return user_play_func;
-};
-
 console.log('Starting first age');
-Game.createWithNIdenticalPlayers(4, get_play_func()).run().dumpState();
+var nplayers = 4;
+var play_funcs = [user_play_func]
+while (play_funcs.length < nplayers) {
+  play_funcs.push(bot_play_func);
+}
+
+var game = new Game(play_funcs);
+game.run().dumpState();
