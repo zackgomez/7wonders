@@ -233,6 +233,12 @@ var cards = [
   },
 ];
 
+// give each card a unique id
+cards = _.map(cards, function (card) {
+  card.id = _.uniqueId();
+  return card;
+});
+
 exports.cards = cards;
 exports.wrapWonderStage = function (stage, card) {
   var wrapper = {
