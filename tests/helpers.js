@@ -25,6 +25,10 @@ module.exports = {
     return { type: 'victory', vps: func };
   },
 
+  wonderCardWithEffect: function (effect) {
+    return { type: 'wonder', effect: effect };
+  },
+
   basicResourceCard: function(resources) {
     return { 
       type: 'basic_resource', 

@@ -8,7 +8,8 @@ console.log('Welcome to the 7 Wonders command line');
 
 var num_players = 4;
 
-var bot_play_func = function (player) {
+var bot_play_func = function (player, cards) {
+  invariant(cards.length > 0, 'must have some cards to pick from!');
   return Actions.play(0);
 };
 

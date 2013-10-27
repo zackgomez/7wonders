@@ -23,12 +23,16 @@ Player.prototype.canPlayFinalCard = function () {
   return false;
 };
 
-Player.prototype.getChoice = function () {
+Player.prototype.getChoiceFromHand = function () {
   // special case for hand size 1
   if (this.current_hand.length === 1 && !this.canPlayFinalCard()) {
     return Actions.discard(0);
   }
-  return this.play_func(this);
+  return this.getChoiceFromCards(this.current_hand);
+};
+
+Player.prototype.getChoiceFromCards = function (cards) {
+  return this.play_func(this, cards);
 };
 
 Player.prototype.getMilitaryStrength = function () {

@@ -36,16 +36,20 @@ var Game = function(player_funcs) {
     this.players[i].right_player = i == num_players - 1 ? 
       this.players[0] : this.players[i+1];
   }
+
+  // Player who is going to look through the discard and play a card free of
+  // cost
+  this.discardLooker = null;
 };
 
-Game.createWithNIdenticalPlayers = function(num_players, play_func) {
+Game.createWithNIdenticalPlayers = function (num_players, play_func) {
   return new Game(
     _(num_players).times(function () { return play_func; })
   );
 };
 
-Game.prototype.run = function() {
-  _.each([1,2,3], function(age) {
+Game.prototype.run = function () {
+  _.each([1,2,3], function (age) {
     this.startAge(age);
     while (!this.isEndOfAge()) {
       this.playRound();
@@ -59,6 +63,14 @@ Game.prototype.run = function() {
   return this;
 };
 
+Game.prototype.letPlayerLookThroughDiscard = function (player) {
+  invariant(
+    this.discardLooker === null,
+    'can only have one player looking through the discard'
+  );
+  this.discardLooker = player;
+};
+
 Game.prototype.handleChoice = function (player, choice) {
   invariant(
     choice.card >= 0 && choice.card < player.current_hand.length,
@@ -66,18 +78,23 @@ Game.prototype.handleChoice = function (player, choice) {
   );
   var card = player.current_hand[choice.card];
   // remove card from hand
-  player.current_hand.splice(choice, 1);
+  player.current_hand.splice(choice.card, 1);
 
+  return this.resolveChoice(player, choice.action, card);
+};
+
+Game.prototype.resolveChoice = function (player, action, card) {
+  var self = this;
   var extra_effect = null;
-  if (choice.action === Actions.constants.PLAY) {
+  if (action === Actions.constants.PLAY) {
     if (card.effect) {
-      extra_effect = function () { return card.effect(this, player); };
+      extra_effect = function () { return card.effect(self, player); };
     }
     player.board.push(card);
-  } else if (choice.action === Actions.constants.SELL) {
+  } else if (action === Actions.constants.SELL) {
     player.money += Game.MONEY_FOR_SELL;
     this.discards.push(card);
-  } else if (choice.action === Actions.constants.UPGRADE_WONDER) {
+  } else if (action === Actions.constants.UPGRADE_WONDER) {
     var wonder_count = player.getCardsOfType('wonder').length;
     invariant(
       wonder_count < player.wonder.stages.length,
@@ -86,18 +103,37 @@ Game.prototype.handleChoice = function (player, choice) {
     player.board.push(
       Cards.wrapWonderStage(player.wonder.stages[wonder_count], card)
     );
-  } else if (choice.action === Actions.constants.DISCARD) {
+  } else if (action === Actions.constants.DISCARD) {
     this.discards.push(card);
   } else {
-    invariant_violation('unknown choice action '+choice.action);
+    invariant_violation('unknown choice action '+action);
   }
 
   return extra_effect;
 };
 
+Game.prototype.maybePlayDiscardedCards = function () {
+  if (!this.discardLooker) return;
+
+  var player = this.discardLooker;
+  this.discardLooker = null;
+
+  if (!this.discards.length) return;
+
+  var choice = player.getChoiceFromCards(this.discards);
+  invariant(
+    choice.card >= 0 && choice.card < this.discards.length,
+    'card must be valid'
+  );
+  var card = this.discards[choice.card];
+  this.discards.splice(choice.card, 1);
+  var effect = this.resolveChoice(player, choice.action, card);
+  effect && effect(this, player);
+};
+
 Game.prototype.playRound = function () {
   var extra_effects = _.map(this.players, function (p) {
-    var choice = p.getChoice();
+    var choice = p.getChoiceFromHand();
     return this.handleChoice(p, choice);
   }, this);
 
@@ -105,6 +141,7 @@ Game.prototype.playRound = function () {
     // JS ONE LINER SUCH HOTNESS WOW
     effect && effect();
   });
+  this.maybePlayDiscardedCards();
 
   invariant(
     this.age in Game.PASS_DIRECTION_FOR_AGE,
