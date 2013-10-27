@@ -71,9 +71,10 @@ module.exports = {
   },
 
   basicPlayer: function () {
-    var p = new Player('basic_player', this.basicWonder(), function () {});
-    p.left_player = new Player();
-    p.right_player = new Player();
-    return p;
+    var player = new Player('basic_player', function () { });
+    player.wonder = this.basicWonder();
+    player.left_player = new Player();
+    player.right_player = new Player();
+    return player;
   },
 };

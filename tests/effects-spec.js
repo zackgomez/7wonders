@@ -9,9 +9,15 @@ describe('effects tests', function () {
   var right_player;
 
   beforeEach(function () {
-    player = new Player('p', Helpers.basicWonder());
-    left_player = new Player('lp', Helpers.basicWonder());
-    right_player = new Player('rp', Helpers.basicWonder());
+    player = new Player('p');
+    player.wonder = Helpers.basicWonder();
+
+    left_player = new Player('lp');
+    left_player.wonder = Helpers.basicWonder();
+
+    right_player = new Player('rp');
+    right_player.wonder = Helpers.basicWonder();
+
     player.left_player = left_player;
     player.right_player = right_player;
   }); 
