@@ -246,6 +246,7 @@ exports.wrapWonderStage = function (stage, card) {
     type: 'wonder',
     name: 'Wonder Upgrade',
     wrapped_card: card,
+    id: _.uniqueId(),
   };
   return _.extend(wrapper, stage);
 };
@@ -256,5 +257,6 @@ exports.wrapWonderResource = function (resource) {
     type: 'wonder-resource',
     name: 'Wonder Resource',
     resource: resource,
+    id: _.uniqueId(),
   };
 };
