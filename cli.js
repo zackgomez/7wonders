@@ -59,11 +59,14 @@ var parse_input = function (cards, input) {
   case 's':
   case 'sell':
     return Actions.sell(card);
+  case 'inpsect':
+    console.log('assuming inpsect is the British spelling of inspect');
   case 'i':
   case 'inspect':
-    //TODO(igillis): function for printing card deets
     print_card_details(cards[card]);
-    throw new Error('unimplemented');
+  throw new Error('');
+  case 'wonedr':
+    console.log('assuming wonedr is the British spelling of wonder');
   case 'w':
   case 'wonder':
     return Actions.upgradeWonder(card);
@@ -103,6 +106,48 @@ var select_card = Q.async(function *(player, cards) {
   }
 });
 
+//TODO(igillis) pretty printer class for other fields/wonder/etc with validation
+var pretty_print_type = function(type) {
+  switch(type) {
+    case 'advanced_resource':
+      return 'Advanced Resource';
+    case 'basic_resource':
+      return 'Basic Resource';
+    case 'guild':
+      return 'Guild';
+    case 'military':
+      return 'Military';
+    case 'economy':
+      return 'Economy';
+    case 'science':
+      return 'Science';
+    case 'victory':
+      return 'Victory';
+    default:
+      return 'Undefined type!';
+  }
+};
+
+//TODO(igillis) handle functions gracefully (pretty printer)
+var print_card_details = function(card) {
+  console.log(' ' + card.name);
+  console.log('  Type: ' + pretty_print_type(card.type));
+
+  var cost_str = '  Cost: ';
+  if (card.resource_cost) cost_str += card.resource_cost + ' ';
+  if (card.money_cost) cost_str += card.money_cost + ' coins ';
+  console.log(cost_str);
+
+  if (Array.isArray(card.resources)) console.log('  Resources: ' + card.resources);
+  if (typeof card.vps == 'number') console.log('  Victory points: ' + card.vps);
+  if (typeof card.military == 'number') console.log('  Military: ' + card.military);
+  if (card.science) console.log('  Science: ' + card.science);
+  if (card.upgrades_from) console.log('  Upgrades from: ' + card.upgrades_from);
+  //TODO(zacharyg) upgrades_to?
+  //TODO(elynde) finish resource trading post type cards 
+  //TODO(igillis) handle money effects
+};
+
 var user_play_func = Q.async(function* (player, request) {
   if (request.type === Actions.constants.SELECT_WONDER) {
     return Actions.selectWonder(request.wonder[0]);
@@ -128,6 +173,7 @@ var genv = Q.async(function* (gens) {
   return results;
 });
 
+// Main function
 Q.spawn(function* () {
   console.log('Welcome to the 7 Wonders command line');
 
