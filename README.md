@@ -1,7 +1,11 @@
 7wonders
 ========
 
-Make sure you have node installed  (http://nodejs.org/download/)
+Make sure you have node v0.11+ installed
+You can get it from 
+ - (http://nodejs.org/download/)
+ - or you can download nvm (https://github.com/creationix/nvm) and then run `nvm use`
+
 
 Also install the dependencies with
 
