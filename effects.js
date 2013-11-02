@@ -45,7 +45,7 @@ module.exports = {
     };
   },
   play_discarded_card_effect: function (game, player) {
-    game.letPlayerLookThroughDiscard(player);
+    // TODO
   },
   make_trading_resource: function (direction, tradable_resources) {
     constants.assertDirection(direction);

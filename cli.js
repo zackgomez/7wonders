@@ -1,23 +1,32 @@
+var _ = require('underscore');
 var Actions = require('./actions');
 var fs = require('fs');
 var Game = require('./game');
 var Deck = require('./deck');
 var invariant = require('./invariant');
-var _ = require('underscore');
+var invariant_violation = invariant.invariant_violation;
 
-console.log('Welcome to the 7 Wonders command line');
+var bot_play_func = function (player, request) {
+  if (request.type === Actions.constants.SELECT_WONDER) {
+    return Actions.selectWonder(request.wonder[0]);
+  } else if (request.type === Actions.constants.SELECT_CARD) {
+    return Actions.play(0);
+  } else if (request.type === Actions.constants.DISCARD_FINAL_CARD) {
+    invariant(
+      request.cards.length === 1,
+      'should only have 1 card when discarding final card'
+    );
+    return Actions.discard(0);
+  } else {
+    invariant_violation('unknown request type \'' + request.type + '\'');
+  }
+};
 
-var num_players = 4;
-
+/*
 var prompt_user = function(prompt, callback) {
   console.log(prompt);
   var input = fs.readFileSync('/dev/stdin', 'utf-8').toString();
   return callback(input);
-};
-
-var bot_play_func = function (player, cards) {
-  invariant(cards.length > 0, 'must have some cards to pick from!');
-  return Actions.play(0);
 };
 
 var get_player_prompt = function (player) {
@@ -43,13 +52,22 @@ var user_play_func = function (player, cards) {
   });
   return Actions.play(parseInt(card.slice(0,1)));
 };
+*/
 
-console.log('Starting first age');
 var nplayers = 4;
-var play_funcs = [user_play_func]
-while (play_funcs.length < nplayers) {
-  play_funcs.push(bot_play_func);
+var game = Game.createWithNPlayers(nplayers);
+var players = game.players;
+
+while (!game.isDone()) {
+  var requests = game.getRequests();
+
+  var responses = _.map(players, function (player, i) {
+    var request = requests[i];
+    return bot_play_func(player, request);
+  });
+
+  game.handleResponses(responses);
 }
 
-var game = new Game(play_funcs);
-game.run().dumpState();
+game.dumpState();
+console.log('scores', game.getScores());

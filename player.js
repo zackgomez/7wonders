@@ -3,9 +3,14 @@ var Actions = require('./actions');
 var Cards = require('./cards');
 var invariant = require('./invariant');
 
-var Player = function(name, play_func) {
+var last_player_id = 100;
+var new_player_id = function () {
+  return last_player_id++;
+};
+
+var Player = function (name) {
+  this.id = new_player_id();
   this.name = name;
-  this.play_func = play_func;
   this.wonder = null;
   this.money = 3;
   this.current_hand = [];
@@ -15,9 +20,9 @@ var Player = function(name, play_func) {
   this.right_player = null;
 }
 
-Player.prototype.selectWonder = function (wonder_a, wonder_b) {
-  // TODO let player select wonder
-  this.wonder = wonder_a;
+Player.prototype.setWonder = function (wonder) {
+  invariant(this.wonder === null, 'wonder already set');
+  this.wonder = wonder;
   // add starting resource 'card' to board
   this.board.push(Cards.wrapWonderResource(this.wonder.resource));
 };
@@ -27,16 +32,14 @@ Player.prototype.canPlayFinalCard = function () {
   return false;
 };
 
-Player.prototype.getChoiceFromHand = function () {
-  // special case for hand size 1
-  if (this.current_hand.length === 1 && !this.canPlayFinalCard()) {
-    return Actions.discard(0);
-  }
-  return this.getChoiceFromCards(this.current_hand);
-};
-
-Player.prototype.getChoiceFromCards = function (cards) {
-  return this.play_func(this, cards);
+Player.prototype.getPlayRequest = function () {
+  var type = this.current_hand.length === 1 && !this.canPlayFinalCard() ?
+    Actions.constants.DISCARD_FINAL_CARD :
+    Actions.constants.SELECT_CARD;
+  return {
+    type: type,
+    cards: this.current_hand,
+  };
 };
 
 Player.prototype.getMilitaryStrength = function () {
