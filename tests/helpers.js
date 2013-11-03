@@ -1,5 +1,8 @@
+var _ = require('underscore');
 var invariant = require('../invariant');
+var Actions = require('../actions');
 var Cards = require('../cards');
+var Game = require('../game');
 var Player = require('../player');
 
 var name_counter = 0;
@@ -76,5 +79,27 @@ module.exports = {
     player.left_player = new Player();
     player.right_player = new Player();
     return player;
+  },
+
+  newGame: function (nplayers) {
+    nplayers = nplayers || 4;
+    return Game.createWithNPlayers(nplayers);
+  },
+
+  newGameWithWonders: function (nplayers) {
+    var game = this.newGame(nplayers);
+    var requests = game.getRequests();
+    game.handleResponses(_.map(requests, function (request) {
+      return Actions.selectWonder(request.wonder[0]);
+    }));
+    return game;
+  },
+
+  playRound: function (game, action) {
+    var requests = game.getRequests();
+    game.handleResponses(_.map(requests, function () {
+      return action;
+    }));
+    return game;
   },
 };
