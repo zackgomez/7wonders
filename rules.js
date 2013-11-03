@@ -1,26 +1,29 @@
 var _ = require('underscore');
 
 module.exports = {
-  getNullableCostToBuild: function(player, new_card) {
+  getCanBuild: function(player, new_card) {
     var already_built = _.find(player.board, function (card) {
       return card.name == new_card.name;
     });
 
-    if (already_built) return null;
+    if (already_built) return cannot_build(CanBuildResult.ALREADY_BUILT);
 
     var can_upgrade = _.find(player.board, function (card) {
       return card.upgrades_to && card.upgrades_to == new_card.name;
     });
 
-    if (can_upgrade) return new Path();
+    if (can_upgrade) return can_build(new Path(), CanBuildResult.UPGRADE);
 
     if (!new_card.resource_cost) {
       var money_cost = new_card.money_cost || 0;
       if (player.money >= money_cost) {
-        return new Path().addBankCost(money_cost);
+        return can_build(
+          new Path().addBankCost(money_cost),
+          CanBuildResult.HAS_ENOUGH_MONEY
+        );
       }
 
-      return null;
+      return cannot_build(CanBuildResult.NOT_ENOUGH_MONEY);
     }
 
     var cost_map = accumulate_resources_by_type(new_card.resource_cost);
@@ -32,15 +35,16 @@ module.exports = {
           card.type == 'economy'
          ) {
         var to_add = [];
-        if (Array.isArray(card.resources[0])) {
+        var card_resources = card.resources || [];
+        if (Array.isArray(card_resources[0])) {
           _.each(paths, function (current_path) {
-            _.each(card.resources[0], function(resource) {
+            _.each(card_resources[0], function(resource) {
               to_add.push(current_path.clone().addResource(resource));
             });
           });
           paths = to_add;
         } else {
-          _.each(card.resources, function(resource) {
+          _.each(card_resources, function(resource) {
             _.each(paths, function (current_path) {
               current_path.addResource(resource);
             });
@@ -53,7 +57,12 @@ module.exports = {
       return path_is_sufficient(path, cost_map);
     });
 
-    if (path_with_own_resources) return path_with_own_resources;
+    if (path_with_own_resources) {
+      return can_build(
+        path_with_own_resources, 
+        CanBuildResult.OWN_RESOURCES_SUFFICIENT
+      );
+    }
 
     paths = this.addNeighborResources(
       paths, 
@@ -77,20 +86,21 @@ module.exports = {
     });
 
     if (!path || path.getTotalCost() > player.money) {
-      return null;
+      return cannot_build(CanBuildResult.NOT_ENOUGH_RESOURCES_AND_OR_MONEY);
     }
 
-    return path;
+    return can_build(path, CanBuildResult.CAN_BUILD_WITH_BORROWING);
   },
 
   // TODO: add in trading posts!
   addNeighborResources: function(player_resources, neighbor, add_cost_func) {
     _.each(neighbor.board, function (card) {
       if (card.type == 'basic_resource' || card.type == 'advanced_resource') {
-        if (Array.isArray(card.resources[0])) {
+        var card_resources = card.resources || [];
+        if (Array.isArray(card_resources[0])) {
           var to_add = [];
           _.each(player_resources, function (current_path) {
-            _.each(card.resources[0], function(resource) {
+            _.each(card_resources[0], function(resource) {
               var new_path = current_path.clone().addResource(resource);
               add_cost_func.call(new_path, 2)
               to_add.push(new_path);
@@ -98,7 +108,7 @@ module.exports = {
           });
           player_resources = player_resources.concat(to_add);
         } else {
-          _.each(card.resources, function(resource) {
+          _.each(card_resources, function(resource) {
             var to_add = [];
             _.each(player_resources, function (current_path) {
               var new_path = current_path.clone().addResource(resource);
@@ -115,7 +125,38 @@ module.exports = {
   },
 
   Path: Path,
+  CanBuildResult: CanBuildResult,
 };
+
+function can_build(path, reason) {
+  return new CanBuildResult(true, path, reason); 
+}
+
+function cannot_build(reason) {
+  return new CanBuildResult(false, null, reason);
+}
+
+function CanBuildResult(true_or_false, path, reason) {
+  this.true_or_false = true_or_false;
+  this.path = path;
+  this.reason = reason;
+}
+
+CanBuildResult.prototype.canBuild = function () {
+  return this.true_or_false;
+};
+
+CanBuildResult.prototype.getReason = function() {
+  return this.reason;
+};
+
+CanBuildResult.ALREADY_BUILT = 'Already built';
+CanBuildResult.NOT_ENOUGH_MONEY = 'Not enough money';
+CanBuildResult.NOT_ENOUGH_RESOURCES_AND_OR_MONEY = 'Not enough resources and/or money';
+CanBuildResult.UPGRADE = 'Free upgrade';
+CanBuildResult.HAS_ENOUGH_MONEY = 'Has enough money';
+CanBuildResult.OWN_RESOURCES_SUFFICIENT = 'Can build with own resources';
+CanBuildResult.CAN_BUILD_WITH_BORROWING = 'Can build with borrowing from neighbours';
 
 function Path(path, cost) {
   this.path = path || {};
