@@ -1,14 +1,11 @@
 var _ = require('underscore');
-var fs = require('fs');
 var readline = require('readline');
 var Q = require('q');
 
 var Actions = require('./actions');
-var Game = require('./game');
-var Deck = require('./deck');
+var GameRunner = require('./game_runner');
 var invariant = require('./invariant');
 var invariant_violation = invariant.invariant_violation;
-var genv = require('./gen_util.js').genv;
 
 var bot_play_func = Q.async(function* (player, request) {
   if (request.type === Actions.constants.SELECT_WONDER) {
@@ -166,21 +163,12 @@ Q.spawn(function* () {
   console.log('Welcome to the 7 Wonders command line');
 
   var nplayers = 4;
-  var game = Game.createWithNPlayers(nplayers);
-  var players = game.players;
-  while (!game.isDone()) {
-    var requests = game.getRequests();
-
-    var gens = _.map(players, function (player, i) {
-      if (i == 0) return user_play_func(player, requests[i]);
-      return bot_play_func(player, requests[i]);
-    });
-
-    var responses = yield genv(gens);
-
-    game.handleResponses(responses);
-  }
-
-  game.dumpState();
-  console.log('scores', game.getScores());
+  var defs = _.times(4, function (i) {
+    return {
+      name: 'player'+(i+1),
+      play_func: i == 0 ? user_play_func : bot_play_func,
+    };
+  });
+  var runner = new GameRunner(defs);
+  yield runner.genRun();
 });
