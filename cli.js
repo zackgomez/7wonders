@@ -8,6 +8,7 @@ var Game = require('./game');
 var Deck = require('./deck');
 var invariant = require('./invariant');
 var invariant_violation = invariant.invariant_violation;
+var genv = require('./gen_util.js').genv;
 
 var bot_play_func = Q.async(function* (player, request) {
   if (request.type === Actions.constants.SELECT_WONDER) {
@@ -37,10 +38,6 @@ var prompt_user = Q.async(function* (prompt) {
     });
   });
 });
-
-var print_card_details = function(card) {
-  console.log('go go gadget wiener!');
-};
 
 var parse_input = function (cards, input) {
   input = input.split(' ');
@@ -162,15 +159,6 @@ var user_play_func = Q.async(function* (player, request) {
   } else {
     invariant_violation('unknown request type \'' + request.type + '\'');
   }
-});
-
-var genv = Q.async(function* (gens) {
-  invariant(Array.isArray(gens), 'genv takes an array');
-  var results = [];
-  for (var i = 0; i < gens.length; i++) {
-    results.push(yield gens[i]);
-  }
-  return results;
 });
 
 // Main function
