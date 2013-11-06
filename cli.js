@@ -47,25 +47,25 @@ var parse_input = function (cards, input) {
   }
 
   switch(action) {
-  case 'p':
-  case 'play':
-    return Actions.play(card);
-  case 's':
-  case 'sell':
-    return Actions.sell(card);
-  case 'inpsect':
-    console.log('assuming inpsect is the British spelling of inspect');
-  case 'i':
-  case 'inspect':
-    print_card_details(cards[card]);
-  throw new Error('');
-  case 'wonedr':
-    console.log('assuming wonedr is the British spelling of wonder');
-  case 'w':
-  case 'wonder':
-    return Actions.upgradeWonder(card);
-  default:
-    throw new Error('Invalid action. You can [p]lay, [s]ell, [w]onder, or [i]nspect your cards');
+    case 'p':
+    case 'play':
+      return Actions.play(card);
+    case 's':
+    case 'sell':
+      return Actions.sell(card);
+    case 'inpsect':
+      console.log('assuming inpsect is the British spelling of inspect');
+    case 'i':
+    case 'inspect':
+      print_card_details(cards[card]);
+    throw new Error('');
+    case 'wonedr':
+      console.log('assuming wonedr is the British spelling of wonder');
+    case 'w':
+    case 'wonder':
+      return Actions.upgradeWonder(card);
+    default:
+      throw new Error('Invalid action. You can [p]lay, [s]ell, [w]onder, or [i]nspect your cards');
   }
 };
 
@@ -95,7 +95,7 @@ var select_card = Q.async(function *(player, cards) {
       var action = parse_input(cards, input);
       return action;
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
   }
 });
