@@ -54,4 +54,11 @@ Player.prototype.getCardsOfType = function (type) {
   });
 };
 
+Player.prototype.getResources = function () {
+  return _.filter(
+    _.pluck(this.board, 'resources'),
+    _.identity
+  );
+};
+
 module.exports = Player;

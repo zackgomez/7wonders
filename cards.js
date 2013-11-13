@@ -256,7 +256,7 @@ exports.wrapWonderResource = function (resource) {
     age: 'wonder',
     type: 'wonder-resource',
     name: 'Wonder Resource',
-    resource: resource,
+    resources: [resource],
     id: _.uniqueId(),
   };
 };

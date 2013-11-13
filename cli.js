@@ -1,11 +1,12 @@
 var _ = require('underscore');
 var readline = require('readline');
 var Q = require('q');
+var invariant = require('./invariant');
+var invariant_violation = invariant.invariant_violation;
 
 var Actions = require('./actions');
 var GameRunner = require('./game_runner');
-var invariant = require('./invariant');
-var invariant_violation = invariant.invariant_violation;
+var Rules = require('./rules');
 
 var bot_play_func = Q.async(function* (player, request) {
   if (request.type === Actions.constants.SELECT_WONDER) {
@@ -36,7 +37,7 @@ var prompt_user = Q.async(function* (prompt) {
   });
 });
 
-var parse_input = function (cards, input) {
+var parse_input = function (player, cards, input) {
   input = input.split(' ');
   if (input.length != 2) {
     throw new Error('Input must be an action and a card');
@@ -49,6 +50,11 @@ var parse_input = function (cards, input) {
   switch(action) {
     case 'p':
     case 'play':
+      var can_build = Rules.getCanBuild(player, card);
+      if (!can_build.canBuild()) {
+        throw new Error('Cannot build: ' + can_build.getReason());
+      }
+      console.log('can build: ' + can_build.getReason());
       return Actions.play(card);
     case 's':
     case 'sell':
@@ -70,7 +76,10 @@ var parse_input = function (cards, input) {
 };
 
 var player_prompt = function (player, cards) {
-  str = '\n' + player.name + ' current card choice:\n';
+  str = '\n' + player.name + ' money: ' + player.money + '\n';
+  str += 'Wonder: ' + JSON.stringify(player.wonder) + '\n';
+  str += 'Resources: ' + JSON.stringify(player.getResources()) + '\n';
+  str += 'current card choices:\n';
   _.each(cards, function(card, index) {
     str += '\t' + card.name;
     _(20-card.name.length).times(
@@ -83,7 +92,7 @@ var player_prompt = function (player, cards) {
   console.log(str);
 };
 
-var select_card = Q.async(function *(player, cards) {
+var select_card = Q.async(function* (player, cards) {
   invariant(cards.length > 0, 'must have some cards to pick from!');
   // try until we get a valid action
   while (true) {
@@ -92,7 +101,7 @@ var select_card = Q.async(function *(player, cards) {
       var input = yield prompt_user(
         'Which card would you like to [p]lay/[s]ell/[w]onder/[i]nspect? '
       );
-      var action = parse_input(cards, input);
+      var action = parse_input(player, cards, input);
       return action;
     } catch (e) {
       console.log(e.message);
