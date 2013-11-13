@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var invariant = require('./invariant');
 var constants = require('./constants');
 var effects = require('./effects');
 
@@ -240,6 +241,13 @@ cards = _.map(cards, function (card) {
 });
 
 exports.cards = cards;
+exports.assertIsCard = function (card) {
+  invariant(
+    card.id && card.age && card.type && card.name,
+    'Invalid card'
+  );
+};
+
 exports.wrapWonderStage = function (stage, card) {
   var wrapper = {
     age: 'wonder',

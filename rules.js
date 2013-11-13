@@ -1,7 +1,10 @@
 var _ = require('underscore');
+var Cards = require('./cards');
 
 module.exports = {
   getCanBuild: function(player, new_card) {
+    Cards.assertIsCard(new_card);
+
     var already_built = _.find(player.board, function (card) {
       return card.name == new_card.name;
     });

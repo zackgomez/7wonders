@@ -50,7 +50,7 @@ var parse_input = function (player, cards, input) {
   switch(action) {
     case 'p':
     case 'play':
-      var can_build = Rules.getCanBuild(player, card);
+      var can_build = Rules.getCanBuild(player, cards[card]);
       if (!can_build.canBuild()) {
         throw new Error('Cannot build: ' + can_build.getReason());
       }
