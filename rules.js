@@ -15,13 +15,13 @@ module.exports = {
       return card.upgrades_to && card.upgrades_to == new_card.name;
     });
 
-    if (can_upgrade) return can_build(new Path(), CanBuildResult.UPGRADE);
+    if (can_upgrade) return can_build(new Path(new_card), CanBuildResult.UPGRADE);
 
     if (!new_card.resource_cost) {
       var money_cost = new_card.money_cost || 0;
       if (player.money >= money_cost) {
         return can_build(
-          new Path().addBankCost(money_cost),
+          new Path(new_card).addBankCost(money_cost),
           CanBuildResult.HAS_ENOUGH_MONEY
         );
       }
@@ -31,7 +31,7 @@ module.exports = {
 
     var cost_map = accumulate_resources_by_type(new_card.resource_cost);
 
-    var paths = [ new Path() ];
+    var paths = [ new Path(new_card) ];
     _.each(player.board, function(card) {
       if (card.type == 'basic_resource' || 
           card.type == 'advanced_resource' ||
@@ -153,6 +153,10 @@ CanBuildResult.prototype.getReason = function() {
   return this.reason;
 };
 
+CanBuildResult.prototype.getPath = function () {
+  return this.path;
+};
+
 CanBuildResult.ALREADY_BUILT = 'Already built';
 CanBuildResult.NOT_ENOUGH_MONEY = 'Not enough money';
 CanBuildResult.NOT_ENOUGH_RESOURCES_AND_OR_MONEY = 'Not enough resources and/or money';
@@ -161,15 +165,17 @@ CanBuildResult.HAS_ENOUGH_MONEY = 'Has enough money';
 CanBuildResult.OWN_RESOURCES_SUFFICIENT = 'Can build with own resources';
 CanBuildResult.CAN_BUILD_WITH_BORROWING = 'Can build with borrowing from neighbours';
 
-function Path(path, cost) {
-  this.path = path || {};
-  this.cost = cost || 0;
+function Path(card) {
+  Cards.assertIsCard(card);
+  this.card = card;
+  this.path = {};
+  this.cost = 0;
   this.leftCost = 0;
   this.rightCost = 0;
 }
 
 Path.prototype.clone = function() {
-  var new_path = new Path();
+  var new_path = new Path(this.card);
   new_path.path = _.clone(this.path);
   new_path.cost = this.cost;
   new_path.leftCost = this.leftCost;

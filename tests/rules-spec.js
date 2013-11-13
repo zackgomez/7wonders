@@ -43,7 +43,7 @@ describe('tests for rules', function () {
       player,
       card
     );
-    expect(can_build.path).toEqual(new Path().addBankCost(2));
+    expect(can_build.path).toEqual(new Path(card).addBankCost(2));
   });
 
   it("should let you build cards you have enough resources for (simple)", function() {

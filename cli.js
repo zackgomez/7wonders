@@ -55,6 +55,7 @@ var parse_input = function (player, cards, input) {
         throw new Error('Cannot build: ' + can_build.getReason());
       }
       console.log('can build: ' + can_build.getReason());
+      console.log('path: ', can_build.getPath());
       return Actions.play(card);
     case 's':
     case 'sell':
